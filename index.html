@@ -139,39 +139,40 @@
     gap: 10px;
     }
     .highlight {
-            display: inline-block;
-            position: relative;
+    position: relative;
+    display: inline; /* Inline to handle multiline wrapping */
+    background: none; /* Clear default background */
+    color: #333;
     }
     .highlight::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            right: -8px;
-            top: 70%;
-            bottom: -34%;
-            background-color: #F9F7D9; /* Highlighter color */
-            z-index: -1;
-            transform: translateY(-50%);
-            border-radius: px; /* Rounded for a softer effect */
-            /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
-        }
-        .highlight-2 {
-            display: inline-block;
-            position: relative;
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -4px;
+    right: -4px;
+    top: 0.4em; /* Offset highlight below text */
+    bottom: -0.05em; /* Extends highlight below baseline */
+    background-color: #F9F7D9; /* Highlighter color */
+    border-radius: 1px; /* Rounded edges */
+    }
+    .highlight-2 {
+    position: relative;
+    display: inline; /* Inline to handle multiline wrapping */
+    background: none; /* Clear default background */
+    color: #333;
     }
     .highlight-2::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            right: -8px;
-            top: 70%;
-            bottom: -34%;
-            background-color: #FDF4FA; /* Highlighter color */
-            z-index: -1;
-            transform: translateY(-50%);
-            border-radius: px; /* Rounded for a softer effect */
-            /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
-        }
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -4px;
+    right: -4px;
+    top: 0.4em; /* Offset highlight below text */
+    bottom: -0.05em; /* Extends highlight below baseline */
+    background-color: #FDF4FA; /* Highlighter color */
+    background-color: ; /* Highlighter color */
+    border-radius: 1px; /* Rounded edges */
+    }
   </style>
 
     <h1 class="my-name">
