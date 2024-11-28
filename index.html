@@ -138,6 +138,40 @@
     display: flex;
     gap: 10px;
     }
+    .highlight {
+            display: inline-block;
+            position: relative;
+    }
+    .highlight::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            right: -8px;
+            top: 70%;
+            bottom: -34%;
+            background-color: #F9F7D9; /* Highlighter color */
+            z-index: -1;
+            transform: translateY(-50%);
+            border-radius: px; /* Rounded for a softer effect */
+            /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+        }
+        .highlight-2 {
+            display: inline-block;
+            position: relative;
+    }
+    .highlight-2::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            right: -8px;
+            top: 70%;
+            bottom: -34%;
+            background-color: #FDF4FA; /* Highlighter color */
+            z-index: -1;
+            transform: translateY(-50%);
+            border-radius: px; /* Rounded for a softer effect */
+            /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+        }
   </style>
 
     <h1 class="my-name">
@@ -162,11 +196,11 @@
     </div>
 
     <h2>
-      hello.
+      <span class="highlight">hello.</span>
     </h2>
 
     <h3>
-      Highly versatile, outcome orientated SaaS product leader.
+      <span class="highlight-2">Highly versatile, outcome orientated SaaS product leader.</span>
     </h3>
 
     <p>
@@ -179,13 +213,12 @@
       I am recognised for my ability to lead cross-functional teams, foster innovation, and uphold the highest standards of quality and accountability. I thrive in fast-moving environments where strategic vision and detailed execution are paramount.
     </p>
     <h2>
-      skills.
+    <span class="highlight">skills.</span>
     </h2>
     <p>
       Some skills
     </p>
-    <p>
-    </p>
+
 </body>
 
 </html>
