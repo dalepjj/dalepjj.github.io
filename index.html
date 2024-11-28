@@ -3,19 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+  
     <title>
       Dale Jacobs Resume
     </title>
 </head>
 
 <body>
-    <h1>
+  <style>
+      .h1-name {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight:lighter;
+      }
+
+    .contact-button {
+      background-color: #F9F7D9;
+      color: #2B2727;
+      border:none;
+      border-color: none;
+      border-style: none;
+      border-width: 2px;
+      height:32px;
+      width:100px;
+      border-radius:4px;
+      cursor:pointer;
+      font-weight: normal;
+      font-size:12px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-right: 10px;
+      transition: background-color 0.15s;
+      transition: box-shadow 0.15s;
+    }
+    .contact-button:hover {
+      background-color: #F7F091;
+      box-shadow: 3px 3px 8px #0000001a;
+    }
+  .contact-button:active {
+    opacity: 0.5;
+  }
+      .hi-button {
+      background-color: #F9F7D9;
+      color: #2B2727;
+      border:none;
+      border-color: none;
+      border-style: none;
+      height:32px;
+      width:100px;
+      border-radius:4px;
+      cursor:pointer;
+      font-weight:normal;
+      font-size:12px;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.15s;
+      transition: box-shadow 0.15s;
+    }
+    .hi-button:hover {
+      background-color: #F7F091;
+      box-shadow: 3px 3px 8px #0000001a;
+    }
+    .hi-button.hi-button:active {
+      opacity:0.5;
+    }
+
+  </style>
+    <h1 class="h1-name">
       Dale Jacobs
     </h1>
     
-    <button>
+    <button class="contact-button">
       Contact
+    </button>
+
+    <button class="hi-button">
+      Say Hi
     </button>
 
     <p>
