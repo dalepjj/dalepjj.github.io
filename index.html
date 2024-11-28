@@ -140,16 +140,16 @@
     }
     .highlight {
     position: relative;
-    display: inline; /* Inline to handle multiline wrapping */
-    background: none; /* Clear default background */
+    display: inline-block; /* Properly handles multiline text */
+    background: none;
     color: #333;
     }
     .highlight::before {
     content: '';
     position: absolute;
     z-index: -1;
-    left: -4px;
-    right: -4px;
+    left: -4px; /* Extends highlight beyond the left side */
+    width: calc(100% + 8px); /* Ensures the highlight extends beyond both sides */
     top: 0.4em; /* Offset highlight below text */
     bottom: -0.05em; /* Extends highlight below baseline */
     background-color: #F9F7D9; /* Highlighter color */
@@ -157,22 +157,24 @@
     }
     .highlight-2 {
     position: relative;
-    display: inline; /* Inline to handle multiline wrapping */
-    background: none; /* Clear default background */
+    display: inline-block; /* Properly handles multiline text */
+    background: none;
     color: #333;
     }
     .highlight-2::before {
     content: '';
     position: absolute;
     z-index: -1;
-    left: -4px;
-    right: -4px;
+    left: -4px; /* Extends highlight beyond the left side */
+    width: calc(100% + 8px); /* Ensures the highlight extends beyond both sides */
     top: 0.4em; /* Offset highlight below text */
     bottom: -0.05em; /* Extends highlight below baseline */
     background-color: #FDF4FA; /* Highlighter color */
-    background-color: ; /* Highlighter color */
     border-radius: 1px; /* Rounded edges */
     }
+
+
+
   </style>
 
     <h1 class="my-name">
