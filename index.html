@@ -101,7 +101,7 @@
     .contact-button:active {
       opacity: 0.5;
     }
-    .hi-button {
+    .linkedin-button {
       background-color:white;
       color: #2B2727;
       border: 2px;
@@ -124,33 +124,19 @@
       margin-bottom: 0;
       vertical-align: top;
     }
-    .hi-button:hover {
+    .linkedin-button:hover {
       background-color: #F7F091;
       box-shadow: 3px 3px 8px #0000001a;
     }
-    .hi-button.hi-button:active {
+    .linkedin-button.hi-button:active {
       opacity:0.5;
-    }
-    .link {
-      font-family: Petrona;
-      font-size: 1rem;
-      font-weight: 400;
-      color: teal;
-      margin-left: 30px;
-      margin-top: 0;
-      margin-bottom: 0;
     }
     .emoji-space {
       margin-left: 4px;
     }  
-    .page-nav {
-      text-decoration: none;
-      font-family: Petrona;
-      font-size: 1rem;
-      font-weight: 400;
-      color: teal;
-      margin-left: 30px;
-      margin-right: 30px;
+    .button-container {
+    display: flex;
+    gap: 10px;
     }
   </style>
 
@@ -162,13 +148,18 @@
       Director of Product Management
     </h2>
 
-    <button class="contact-button">
-      Get in touch <span class="emoji-space">&#128222</span>
-    </button>
-
-    <button class="hi-button">
-      Say Hi <span class="emoji-space">&#128075</span>
-    </button>
+    <div class="button-container">
+      <a href="contact.html">
+        <button class="contact-button">
+          Get in touch <span class="emoji-space">&#128222;</span>
+        </button>
+      </a>
+      <a href="https://www.linkedin.com/in/dalepjj/" target="_blank">
+        <button class="linkedin-button">
+          Connect on LinkedIn <span class="emoji-space">&#128075;</span>
+        </button>
+      </a>
+    </div>
 
     <h2>
       hello.
@@ -195,17 +186,6 @@
     </p>
     <p>
     </p>
-    <nav class="page-nav">
-      <a href="index.html">Home</a>
-    </nav>
-    <nav class="page-nav">
-    <a href="page-2.html">Second page</a>
-    </nav>
-    <a class="link"
-      href="https://www.linkedin.com/in/dalepjj/"
-      target="_blank">
-      Connect on LinkedIn
-    </a>
 </body>
 
 </html>
