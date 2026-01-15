@@ -79,25 +79,6 @@ const Contact = () => {
             />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center p-8 bg-coral-light rounded-2xl"
-          >
-            <h2 className="font-serif text-2xl font-medium mb-3">Open to Opportunities</h2>
-            <p className="body-text mb-6">
-              Currently exploring Director and VP-level product leadership roles 
-              in B2B SaaS, with a focus on AI, data, and platform strategy.
-            </p>
-            <a
-              href="mailto:dale.pjj@gmail.com?subject=Let's%20Connect"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-coral text-primary-foreground rounded-full font-medium hover:bg-coral-hover transition-colors"
-            >
-              <Mail className="w-4 h-4" />
-              Get in Touch
-            </a>
-          </motion.div>
         </div>
       </div>
     </Layout>
