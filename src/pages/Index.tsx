@@ -34,7 +34,7 @@ const Index = () => {
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight leading-tight mb-6">
                 Product Leader.
                 <br />
-                <span className="italic">Always building.</span>
+                <span className="italic">Design Thinker.</span>
               </h1>
             </motion.div>
 
@@ -53,9 +53,9 @@ const Index = () => {
 
             {/* Circle Navigation Buttons */}
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-              <CircleButton to="/resume" label="Resume" variant="coral-light" delay={0.5} />
-              <CircleButton to="/work" label="Work" variant="coral-muted" delay={0.6} />
-              <CircleButton to="/contact" label="Contact" variant="coral" delay={0.7} />
+              <CircleButton to="/resume" label="Resume" variant="resume" delay={0.5} />
+              <CircleButton to="/work" label="Work" variant="work" delay={0.6} />
+              <CircleButton to="/contact" label="Contact" variant="contact" delay={0.7} />
             </div>
           </div>
         </div>
