@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 interface CircleButtonProps {
   to: string;
   label: string;
-  variant?: "coral" | "coral-light";
+  variant?: "coral" | "coral-light" | "coral-muted";
   delay?: number;
 }
 
@@ -13,6 +13,7 @@ const CircleButton = ({ to, label, variant = "coral-light", delay = 0 }: CircleB
   const variantClasses = {
     coral: "bg-coral text-primary-foreground hover:bg-coral-hover hover:scale-105",
     "coral-light": "bg-coral-light text-foreground hover:bg-coral hover:text-primary-foreground hover:scale-105",
+    "coral-muted": "bg-coral/40 text-foreground hover:bg-coral hover:text-primary-foreground hover:scale-105",
   };
 
   return (

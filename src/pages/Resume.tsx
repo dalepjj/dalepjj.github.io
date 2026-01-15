@@ -14,11 +14,11 @@ const ExperienceItem = ({ title, company, period, highlights, delay = 0 }: Exper
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
-    className="border-l-2 border-coral-light pl-6 pb-10 last:pb-0"
+    className="relative border-l-2 border-coral-light pl-6 pb-10 last:pb-0"
   >
-    <div className="relative">
-      <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-coral" />
-      <h3 className="font-serif text-xl font-medium">{title}</h3>
+    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-coral" />
+    <div>
+      <h3 className="font-serif text-xl font-medium leading-none">{title}</h3>
       <p className="text-coral font-medium mt-1">{company}</p>
       <p className="text-sm text-muted-foreground mt-1 mb-4">{period}</p>
       <ul className="space-y-2">
