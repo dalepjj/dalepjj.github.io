@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import CircleButton from "@/components/CircleButton";
+import profilePhoto from "@/assets/profile-photo.jpg";
 
 const Index = () => {
   return (
@@ -15,7 +16,11 @@ const Index = () => {
             className="flex justify-center lg:justify-end"
           >
             <div className="w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full bg-gradient-to-br from-coral-light to-coral/30 flex items-center justify-center overflow-hidden">
-              <div className="text-6xl font-serif text-coral">DJ</div>
+              <img 
+                src={profilePhoto} 
+                alt="Dale Jacobs" 
+                className="w-full h-full object-cover"
+              />
             </div>
           </motion.div>
 
