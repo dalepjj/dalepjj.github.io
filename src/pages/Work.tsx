@@ -7,36 +7,49 @@ interface WorkItemProps {
   description: string;
   metrics?: string[];
   delay?: number;
+  link?: string;
 }
 
-const WorkItem = ({ title, description, metrics, delay = 0 }: WorkItemProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6, delay }}
-    className="group p-8 bg-card rounded-2xl border border-border hover:border-coral/30 hover:shadow-lg transition-all duration-300"
-  >
-    <div className="flex items-start justify-between mb-4">
-      <h3 className="font-serif text-2xl font-medium group-hover:text-coral transition-colors">
-        {title}
-      </h3>
-      <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-coral transition-colors" />
-    </div>
-    <p className="body-text mb-6">{description}</p>
-    {metrics && (
-      <div className="flex flex-wrap gap-3">
-        {metrics.map((metric) => (
-          <span
-            key={metric}
-            className="px-3 py-1.5 bg-coral-light text-foreground rounded-full text-sm font-medium"
-          >
-            {metric}
-          </span>
-        ))}
+const WorkItem = ({ title, description, metrics, delay = 0, link }: WorkItemProps) => {
+  const content = (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay }}
+      className="group p-8 bg-card rounded-2xl border border-border hover:border-coral/30 hover:shadow-lg transition-all duration-300 h-full"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <h3 className="font-serif text-2xl font-medium group-hover:text-coral transition-colors">
+          {title}
+        </h3>
+        <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-coral transition-colors" />
       </div>
-    )}
-  </motion.div>
-);
+      <p className="body-text mb-6">{description}</p>
+      {metrics && (
+        <div className="flex flex-wrap gap-3">
+          {metrics.map((metric) => (
+            <span
+              key={metric}
+              className="px-3 py-1.5 bg-coral-light text-foreground rounded-full text-sm font-medium"
+            >
+              {metric}
+            </span>
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+
+  if (link) {
+    return (
+      <a href={link} target="_blank" rel="noopener noreferrer" className="block">
+        {content}
+      </a>
+    );
+  }
+
+  return content;
+};
 
 const Work = () => {
   const projects = [
@@ -69,6 +82,7 @@ const Work = () => {
       description:
         "Led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, promoting circularity and sustainable commerce practices.",
       metrics: ["WEF partnership", "Circular economy", "Sustainable commerce"],
+      link: "https://www.weforum.org/impact/strengthening-trust-in-second-hand-markets/",
     },
     {
       title: "AI & Data Strategy at Loftware",
