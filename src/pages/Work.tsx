@@ -78,7 +78,7 @@ const Work = () => {
       title: "Circular Economy Innovation",
       description:
         "Led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, promoting circularity and sustainable commerce practices.",
-      metrics: ["WEF Partnership", "Circular Economy", "Apparel"],
+      metrics: ["WEF", "Circular Economy", "Apparel"],
       link: "https://www.weforum.org/impact/strengthening-trust-in-second-hand-markets/",
     },
     {
@@ -92,7 +92,7 @@ const Work = () => {
       title: "Award-Winning Benefits Management",
       description:
         "At Asda, I recognised that while we were successfully delivering projects, we weren't always capturing the intended value. I designed and rolled out a comprehensive benefits management framework to close this loop. This initiative, shifting our focus from simple delivery to measurable business impact was the key factor in me being named the IIBA UK Business Analyst of the Year 2013.",
-      metrics: ["Benefits Management", "Business Analysis", "IIBA"],
+      metrics: ["Benefits", "Business Analysis", "IIBA"],
       link: "https://www.linkedin.com/pulse/from-business-change-product-management-analysis-journey-assistkd-gbyle/",
     },
   ];
