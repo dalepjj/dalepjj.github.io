@@ -114,11 +114,32 @@ const Resume = () => {
           </p>
         </motion.div>
 
-        {/* Core Skills - Now at the top */}
+        {/* Experience */}
+        <section className="mb-16">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl font-serif font-medium mb-8"
+          >
+            Experience
+          </motion.h2>
+          <div className="space-y-14">
+            {experiences.map((exp, index) => (
+              <ExperienceItem
+                key={index}
+                {...exp}
+                delay={0.3 + index * 0.1}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Core Skills */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.5 }}
           className="mb-16"
         >
           <h2 className="text-2xl font-serif font-medium mb-6">Core Skills</h2>
@@ -133,27 +154,6 @@ const Resume = () => {
             ))}
           </div>
         </motion.section>
-
-        {/* Experience */}
-        <section className="mb-16">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-2xl font-serif font-medium mb-8"
-          >
-            Experience
-          </motion.h2>
-          <div className="space-y-14">
-            {experiences.map((exp, index) => (
-              <ExperienceItem
-                key={index}
-                {...exp}
-                delay={0.4 + index * 0.1}
-              />
-            ))}
-          </div>
-        </section>
 
         {/* Education & Certifications */}
         <motion.section
