@@ -31,10 +31,11 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight leading-tight mb-6">
-                Product Leader.
-                <br />
-                <span className="italic">Design Thinker.</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight mb-6">
+                <span className="whitespace-nowrap">Product Leader,</span>
+                <div className="mt-2">
+                  <span className="italic">Design Thinker.</span>
+                </div>
               </h1>
             </motion.div>
 
