@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Bug, Maximize2, Ban, Coffee, MessageCircle } from "lucide-react";
+import { Skull, Bomb, ShieldOff, Sparkles, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -39,39 +39,50 @@ const INITIAL_SPEED = 4.4; // 10% faster than 4
 const WIN_SCORE = 1000;
 const MIN_OBJECT_SPACING = 300;
 
-// Audio context for beeps
+// Persistent audio context for mobile compatibility
+let audioContext: AudioContext | null = null;
+
+const getAudioContext = (): AudioContext | null => {
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    // Resume context if suspended (required for mobile after user interaction)
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    return audioContext;
+  } catch (e) {
+    return null;
+  }
+};
+
 const createBeep = (frequency: number, duration: number, volume: number = 0.1) => {
-  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
   
   oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
+  gainNode.connect(ctx.destination);
   
   oscillator.frequency.value = frequency;
   oscillator.type = "square";
-  gainNode.gain.value = volume;
+  gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
   
-  oscillator.start();
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-  oscillator.stop(audioContext.currentTime + duration);
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + duration);
 };
 
 const playJumpBeep = () => {
-  try {
-    createBeep(600, 0.08, 0.08);
-  } catch (e) {
-    // Audio not supported
-  }
+  createBeep(600, 0.08, 0.08);
 };
 
 const playMilestoneBeep = () => {
-  try {
-    createBeep(800, 0.15, 0.1);
-    setTimeout(() => createBeep(1000, 0.15, 0.1), 100);
-  } catch (e) {
-    // Audio not supported
-  }
+  createBeep(800, 0.15, 0.1);
+  setTimeout(() => createBeep(1000, 0.15, 0.1), 100);
 };
 
 const Play = () => {
@@ -275,7 +286,7 @@ const Play = () => {
       const newTime = prev + 16.67 * deltaTime;
       
       if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
-        setSpeed(s => Math.min(s + 0.3, 8.8)); // 10% faster max (8 * 1.1)
+        setSpeed(s => Math.min(s + 0.33, 9.68)); // 10% faster progression (0.3 * 1.1, 8.8 * 1.1)
         lastSpeedIncreaseRef.current = newTime;
       }
       
@@ -395,15 +406,15 @@ const Play = () => {
     const iconClass = "w-full h-full";
     switch (type) {
       case "bug":
-        return <Bug className={`${iconClass} text-slate-500`} />;
+        return <Skull className={`${iconClass} text-slate-500`} />;
       case "scope":
-        return <Maximize2 className={`${iconClass} text-slate-500`} />;
+        return <Bomb className={`${iconClass} text-slate-500`} />;
       case "blocker":
-        return <Ban className={`${iconClass} text-slate-500`} />;
+        return <ShieldOff className={`${iconClass} text-slate-500`} />;
       case "coffee":
-        return <Coffee className={`${iconClass} text-slate-500`} />;
+        return <Sparkles className={`${iconClass} text-slate-500`} />;
       case "insight":
-        return <MessageCircle className={`${iconClass} text-slate-500`} />;
+        return <Lightbulb className={`${iconClass} text-slate-500`} />;
     }
   };
 
@@ -463,8 +474,6 @@ const Play = () => {
             <h1 className="section-title mb-4">Sprint Runner</h1>
             <p className="body-text max-w-xl mx-auto">
               Navigate the chaos of product development.
-              <br />
-              Dodge bugs and scope creep to achieve product-market fit!
             </p>
           </motion.div>
 
@@ -565,8 +574,7 @@ const Play = () => {
               {gameState === "start" && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">Ready for the Sprint?</h2>
-                  <p className="text-muted-foreground text-sm mb-1">Dodge bugs and scope creep</p>
-                  <p className="text-muted-foreground text-sm mb-6">to achieve product-market fit!</p>
+                  <p className="text-muted-foreground text-sm mb-6">Acquire 1,000 users to achieve product-market fit!</p>
                   <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
                     Start Game
                   </Button>
@@ -622,13 +630,13 @@ const Play = () => {
             className="text-center mt-6 text-xs text-muted-foreground"
           >
             <p className="mb-3">
-              <Coffee className="inline w-4 h-4 mr-1" /> Coffee & 
-              <MessageCircle className="inline w-4 h-4 mx-1" /> Insights = +20 Users
+              <Sparkles className="inline w-4 h-4 mr-1" /> Boost & 
+              <Lightbulb className="inline w-4 h-4 mx-1" /> Insights = +20 Users
             </p>
             <p>
-              Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
-              <Maximize2 className="inline w-4 h-4 mx-1" /> Scope Creep & 
-              <Ban className="inline w-4 h-4 mx-1" /> Blockers
+              Avoid <Skull className="inline w-4 h-4 mx-1" /> Bugs, 
+              <Bomb className="inline w-4 h-4 mx-1" /> Scope Creep & 
+              <ShieldOff className="inline w-4 h-4 mx-1" /> Blockers
             </p>
           </motion.div>
         </div>
