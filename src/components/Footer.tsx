@@ -1,4 +1,4 @@
-import { Linkedin, Mail } from "lucide-react";
+
 
 const Footer = () => {
   return (
@@ -21,9 +21,8 @@ const Footer = () => {
               href="https://linkedin.com/in/dalepjj" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 text-sm"
+              className="text-muted-foreground hover:text-foreground transition-colors text-sm"
             >
-              <Linkedin className="w-4 h-4" />
               /in/dalepjj
             </a>
           </div>

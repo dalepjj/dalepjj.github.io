@@ -12,8 +12,8 @@ const CircleButton = ({ to, label, variant = "resume", delay = 0 }: CircleButton
   const baseClasses = "w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center font-serif text-lg transition-all duration-300 text-charcoal";
   const variantClasses = {
     resume: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
-    work: "bg-[#E48981] hover:brightness-95 hover:scale-105",
-    contact: "bg-[#C3A19E] hover:brightness-95 hover:scale-105",
+    work: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+    contact: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
   };
 
   return (
