@@ -29,7 +29,7 @@ interface GroundSegment {
   width: number;
 }
 
-const GAME_WIDTH = 800;
+const GAME_WIDTH = 640;
 const GAME_HEIGHT = 300;
 const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
