@@ -84,7 +84,7 @@ const Resume = () => {
     "Team Leadership & Mentoring",
     "Go-to-market Execution",
     "User Research",
-    "Continuous Discovery",
+    "Design Thinking",
     "Rapid Prototyping",
     "Pricing & Packaging",
     "Cross-functional Collaboration",
