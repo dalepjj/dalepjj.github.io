@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Bug, Bomb, Sparkles, Lightbulb } from "lucide-react";
+import { Bug, Bomb, ShieldOff, Sparkles, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -13,7 +13,7 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: "bug" | "scope" | "hippo" | "coffee" | "insight";
+  type: "bug" | "scope" | "blocker" | "coffee" | "insight";
 }
 
 interface Cloud {
@@ -199,7 +199,7 @@ const Play = () => {
       const obstacleRand = Math.random();
       if (obstacleRand < 0.33) type = "bug";
       else if (obstacleRand < 0.66) type = "scope";
-      else type = "hippo";
+      else type = "blocker";
       y = GROUND_Y - 30;
     }
 
@@ -402,31 +402,6 @@ const Play = () => {
     };
   }, [gameState, jump]);
 
-  // HiPPO (Highest Paid Person's Opinion) icon
-  const HippoIcon = () => (
-    <svg viewBox="0 0 30 30" className="w-full h-full">
-      {/* Body */}
-      <ellipse cx="15" cy="18" rx="12" ry="8" fill="#64748b" />
-      {/* Head */}
-      <ellipse cx="8" cy="14" rx="7" ry="6" fill="#64748b" />
-      {/* Snout */}
-      <ellipse cx="3" cy="15" rx="4" ry="3.5" fill="#94a3b8" />
-      {/* Nostrils */}
-      <circle cx="2" cy="14" r="0.8" fill="#334155" />
-      <circle cx="4" cy="14" r="0.8" fill="#334155" />
-      {/* Eye */}
-      <circle cx="9" cy="12" r="1.5" fill="#1e293b" />
-      {/* Ears */}
-      <ellipse cx="11" cy="9" rx="2" ry="1.5" fill="#64748b" />
-      <ellipse cx="6" cy="9" rx="2" ry="1.5" fill="#64748b" />
-      {/* Legs */}
-      <rect x="6" y="23" width="3" height="5" rx="1" fill="#64748b" />
-      <rect x="12" y="23" width="3" height="5" rx="1" fill="#64748b" />
-      <rect x="18" y="23" width="3" height="5" rx="1" fill="#64748b" />
-      <rect x="24" y="23" width="3" height="5" rx="1" fill="#64748b" />
-    </svg>
-  );
-
   const renderIcon = (type: GameObject["type"]) => {
     const iconClass = "w-full h-full";
     switch (type) {
@@ -434,8 +409,8 @@ const Play = () => {
         return <Bug className={`${iconClass} text-slate-500`} />;
       case "scope":
         return <Bomb className={`${iconClass} text-slate-500`} />;
-      case "hippo":
-        return <HippoIcon />;
+      case "blocker":
+        return <ShieldOff className={`${iconClass} text-slate-500`} />;
       case "coffee":
         return <Sparkles className={`${iconClass} text-slate-500`} />;
       case "insight":
@@ -506,21 +481,18 @@ const Play = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex justify-center w-full"
+            className="flex justify-center"
           >
-            {/* Fixed aspect ratio container for consistent gameplay across devices */}
-            <div 
-              className="relative w-full"
-              style={{ maxWidth: GAME_WIDTH }}
+            <div
+              ref={gameRef}
+              className="relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none"
+              style={{ 
+                width: "100%", 
+                maxWidth: GAME_WIDTH, 
+                height: GAME_HEIGHT,
+                touchAction: "none"
+              }}
             >
-              <div
-                ref={gameRef}
-                className="relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none w-full"
-                style={{ 
-                  aspectRatio: `${GAME_WIDTH} / ${GAME_HEIGHT}`,
-                  touchAction: "none"
-                }}
-              >
               {/* Clouds */}
               {clouds.map((cloud, index) => (
                 <div
@@ -648,7 +620,6 @@ const Play = () => {
                   </div>
                 </div>
               )}
-              </div>
             </div>
           </motion.div>
 
@@ -665,7 +636,7 @@ const Play = () => {
             <p>
               Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
               <Bomb className="inline w-4 h-4 mx-1" /> Scope Creep & 
-              <span className="inline-flex items-center mx-1">🦛</span> HiPPOs
+              <ShieldOff className="inline w-4 h-4 mx-1" /> Blockers
             </p>
           </motion.div>
         </div>
