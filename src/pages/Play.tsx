@@ -343,7 +343,7 @@ const Play = () => {
           
           if (checkCollision(player, obj)) {
             if (obj.type === "coffee" || obj.type === "insight") {
-              setScore(s => s + 20); // Changed to +20
+              setScore(s => s + 50); // +50 users per collectible
               return false;
             } else {
               setGameState("gameover");
@@ -631,7 +631,7 @@ const Play = () => {
           >
             <p className="mb-3">
               <Sparkles className="inline w-4 h-4 mr-1" /> Automation & 
-              <Lightbulb className="inline w-4 h-4 mx-1" /> Insights = +20 Users
+              <Lightbulb className="inline w-4 h-4 mx-1" /> Insights = +50 Users
             </p>
             <p>
               Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
