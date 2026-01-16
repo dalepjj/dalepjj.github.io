@@ -35,7 +35,7 @@ const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12;
-const INITIAL_SPEED = 5.06; // 15% faster than 4.4
+const INITIAL_SPEED = 5.82; // 15% faster than 5.06
 const WIN_SCORE = 1000;
 const MIN_OBJECT_SPACING = 300;
 
@@ -286,7 +286,7 @@ const Play = () => {
       const newTime = prev + 16.67 * deltaTime;
       
       if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
-        setSpeed(s => Math.min(s + 0.38, 11.13)); // 15% faster progression
+        setSpeed(s => Math.min(s + 0.44, 12.8)); // 15% faster progression
         lastSpeedIncreaseRef.current = newTime;
       }
       
