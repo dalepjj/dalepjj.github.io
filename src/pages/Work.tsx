@@ -54,41 +54,46 @@ const WorkItem = ({ title, description, metrics, delay = 0, link }: WorkItemProp
 const Work = () => {
   const projects = [
     {
-      title: "Platform Unification at Digimarc",
+      title: "Product Digitisation at Unprecedented Scale",
       description:
-        "Led the strategic integration of EVRYTHNG and Digimarc technologies into a next-generation SaaS platform. Delivered the first unified product in just 8 months, completing full platform unification in 18 months.",
-      metrics: ["8-month launch", "18-month unification", "18% YoY ARR growth"],
+        "Secured and delivered a landmark deal with Unilever for the world's largest implementation of digitised products using GS1 Digital Link QR codes. Delivered on our newly unified platform, this project enabled an always-on, always-relevant direct-to-consumer channel.",
+      metrics: ["GS1 Digital Link", "Product Digitization", "CPG"],
+      link: "https://www.digimarc.com/press-releases/2025/04/29/digimarc-enables-one-cpg-industrys-largest-global-rollouts-2d-barcodes",
     },
     {
-      title: "Unilever Digital Product Implementation",
+      title: "Restoring Trust in Digital Content",
       description:
-        "Secured and delivered a landmark deal with Unilever for the world's largest implementation of digitized products using GS1 Digital Link QR codes, enabling end-to-end product traceability.",
-      metrics: ["World's largest implementation", "GS1 Digital Link", "Enterprise scale"],
+        "In an era of deepfakes, I focused on building a tool that allows consumers to validate the authenticity of digital media. I led the delivery of a 'stronger content credential' system that anchors provenance data to the asset itself, ensuring that anyone, anywhere, can verify the source and history of digital media with absolute confidence.",
+      metrics: ["AI", "C2PA", "Digital Watermarks"],
+      link: "https://www.youtube.com/watch?v=U0UfWq9RxUM",
     },
     {
-      title: "Anti-Counterfeiting Product Launch",
+      title: "Data-Driven Product Authentication",
       description:
-        "Designed and launched a data-driven anti-counterfeiting solution, scaling to over 3 million authentication events. Secured additional investment to extend scope into unauthorized trade detection.",
-      metrics: ["3M+ authentications", "Secured investment", "Brand protection"],
+        "Launched a pioneering anti-counterfeiting solution that assigned unique digital identities at the manufacturing source. The product rapidly scaled to millions of authentication events, generating the data insights needed to identify counterfeiting, parallel trade and unauthorised production exposure.",
+      metrics: ["Mobile", "Apparel", "Brand Integrity"],
+      link: "https://www.youtube.com/watch?v=y6ox1t4tLbM",
     },
     {
-      title: "Self-Service Strategy",
-      description:
-        "Implemented a comprehensive self-service product strategy that dramatically reduced customer onboarding time and shortened sales cycles, enabling scalable growth.",
-      metrics: ["67% faster onboarding", "25% shorter sales cycles", "Reduced CAC"],
-    },
-    {
-      title: "World Economic Forum PoC",
+      title: "Circular Economy Innovation",
       description:
         "Led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, promoting circularity and sustainable commerce practices.",
-      metrics: ["WEF partnership", "Circular economy", "Sustainable commerce"],
+      metrics: ["WEF Partnership", "Circular Economy", "Apparel"],
       link: "https://www.weforum.org/impact/strengthening-trust-in-second-hand-markets/",
     },
     {
-      title: "AI & Data Strategy at Loftware",
+      title: "Increasing Transparency in the Supply Chain",
       description:
-        "Architected the company's AI and Data strategy, establishing a unified data platform to power high-value, user-centric intelligence across core product workflows.",
-      metrics: ["AI strategy", "Data platform", "User intelligence"],
+        "Built an innovative traceability solution rooted in the GS1 EPCIS 2.0 industry standard. By focusing on interoperable event data rather than proprietary silos, we unlocked true end-to-end visibility across the supply chain.",
+      metrics: ["Supply Chain", "Traceability", "EPCIS 2.0"],
+      link: "https://medium.com/@dale.pjj/the-pathway-to-supply-chain-transparency-is-not-as-treacherous-as-you-might-think-22dec2cd5099",
+    },
+    {
+      title: "Award-Winning Benefits Management",
+      description:
+        "At Asda, I recognised that while we were successfully delivering projects, we weren't always capturing the intended value. I designed and rolled out a comprehensive benefits management framework to close this loop. This initiative, shifting our focus from simple delivery to measurable business impact was the key factor in me being named the IIBA UK Business Analyst of the Year 2013.",
+      metrics: ["Benefits Management", "Business Analysis", "IIBA"],
+      link: "https://www.linkedin.com/pulse/from-business-change-product-management-analysis-journey-assistkd-gbyle/",
     },
   ];
 
