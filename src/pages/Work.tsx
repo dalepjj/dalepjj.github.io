@@ -56,42 +56,42 @@ const Work = () => {
     {
       title: "Product Digitisation at Unprecedented Scale",
       description:
-        "Secured and delivered a landmark deal with Unilever for the world's largest implementation of digitised products using GS1 Digital Link QR codes. Delivered on our newly unified platform, this project enabled an always-on, always-relevant direct-to-consumer channel.",
+        "Secured and delivered a landmark deal with Unilever for the world's largest implementation of digitised products using GS1 Digital Link. Delivered on our newly unified platform, this project enabled an always-on, always-relevant direct-to-consumer channel for global brands.",
       metrics: ["GS1 Digital Link", "Product Digitization", "CPG"],
       link: "https://www.digimarc.com/press-releases/2025/04/29/digimarc-enables-one-cpg-industrys-largest-global-rollouts-2d-barcodes",
     },
     {
       title: "Restoring Trust in Digital Content",
       description:
-        "In an era of deepfakes, I focused on building a tool that allows consumers to validate the authenticity of digital media. I led the delivery of a 'stronger content credential' system that anchors provenance data to the asset itself, ensuring that anyone, anywhere, can verify the source and history of digital media with absolute confidence.",
+        "To combat deepfakes, this initiative focused on a tool allowing consumers to validate digital media authenticity. It delivered a 'stronger content credential' system anchoring provenance data to the asset, ensuring anyone can verify the source and history with absolute confidence.",
       metrics: ["AI", "C2PA", "Digital Watermarks"],
       link: "https://www.youtube.com/watch?v=U0UfWq9RxUM",
     },
     {
       title: "Data-Driven Product Authentication",
       description:
-        "Launched a pioneering anti-counterfeiting solution that assigned unique digital identities at the manufacturing source. The product rapidly scaled to millions of authentication events, generating the data insights needed to identify counterfeiting, parallel trade and unauthorised production exposure.",
+        "Launched a pioneering anti-counterfeiting solution assigning unique digital identities at the manufacturing source. Scaling to millions of events, the platform generated critical data insights to identify counterfeiting, parallel trade, and unauthorised production exposure, protecting brand integrity.",
       metrics: ["Mobile", "Apparel", "Brand Integrity"],
       link: "https://www.youtube.com/watch?v=y6ox1t4tLbM",
     },
     {
       title: "Circular Economy Innovation",
       description:
-        "Led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, promoting circularity and sustainable commerce practices.",
+        "Led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market. By creating digital product passports that persist through resale, we promoted circularity and sustainable commerce practices for the future of fashion.",
       metrics: ["WEF", "Circular Economy", "Apparel"],
       link: "https://www.weforum.org/impact/strengthening-trust-in-second-hand-markets/",
     },
     {
       title: "Increasing Transparency in the Supply Chain",
       description:
-        "Built an innovative traceability solution rooted in the GS1 EPCIS 2.0 industry standard. By focusing on interoperable event data rather than proprietary silos, we unlocked true end-to-end visibility across the supply chain.",
+        "Built an innovative traceability solution rooted in the GS1 EPCIS 2.0 industry standard. By shifting focus to interoperable event data rather than proprietary silos, we unlocked true end-to-end visibility, enabling real-time tracking across complex global supply chains.",
       metrics: ["Supply Chain", "Traceability", "EPCIS 2.0"],
       link: "https://medium.com/@dale.pjj/the-pathway-to-supply-chain-transparency-is-not-as-treacherous-as-you-might-think-22dec2cd5099",
     },
     {
       title: "Award-Winning Benefits Management",
       description:
-        "At Asda, I recognised that while we were successfully delivering projects, we weren't always capturing the intended value. I designed and rolled out a comprehensive benefits management framework to close this loop. This initiative, shifting our focus from simple delivery to measurable business impact was the key factor in me being named the IIBA UK Business Analyst of the Year 2013.",
+        "At Asda, I introduced a benefits management framework to ensure projects captured their intended value, not just their delivery targets. This strategic shift toward measurable business impact was the key factor in being named the IIBA UK Business Analyst of the Year 2013.",
       metrics: ["Benefits", "Business Analysis", "IIBA"],
       link: "https://www.linkedin.com/pulse/from-business-change-product-management-analysis-journey-assistkd-gbyle/",
     },
