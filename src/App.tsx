@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Resume from "./pages/Resume";
 import Work from "./pages/Work";
 import Contact from "./pages/Contact";
+import Play from "./pages/Play";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/resume" element={<Resume />} />
           <Route path="/work" element={<Work />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/play" element={<Play />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>
