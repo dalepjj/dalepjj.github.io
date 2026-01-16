@@ -2,104 +2,77 @@ import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 
 interface ExperienceItemProps {
+  period: string;
   title: string;
   company: string;
-  period: string;
-  highlights: string[];
+  description: string;
   delay?: number;
 }
 
-const ExperienceItem = ({ title, company, period, highlights, delay = 0 }: ExperienceItemProps) => (
+const ExperienceItem = ({ period, title, company, description, delay = 0 }: ExperienceItemProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
-    className="relative border-l-2 border-coral-light pl-6 pb-10 last:pb-0"
+    className="border-l-4 border-coral pl-6 py-4"
   >
-    <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-coral" />
-    <div>
-      <h3 className="font-serif text-xl font-medium leading-none">{title}</h3>
-      <p className="text-coral font-medium mt-1">{company}</p>
-      <p className="text-sm text-muted-foreground mt-1 mb-4">{period}</p>
-      <ul className="space-y-2">
-        {highlights.map((highlight, index) => (
-          <li key={index} className="body-text text-sm flex gap-2">
-            <span className="text-coral mt-1">•</span>
-            <span>{highlight}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <p className="text-sm text-muted-foreground mb-2">{period}</p>
+    <h3 className="font-serif text-xl font-medium leading-tight">
+      {title}, <span className="text-coral">{company}</span>
+    </h3>
+    <p className="body-text mt-3">{description}</p>
   </motion.div>
 );
 
 const Resume = () => {
   const experiences = [
     {
+      period: "September 2025 – Present",
       title: "Senior Product Manager - AI and Data",
       company: "Loftware",
-      period: "September 2025 – Present",
-      highlights: [
-        "Architected Loftware's AI and Data strategy, establishing a unified data platform to power high-value, user-centric intelligence across core product workflows.",
-        "Led the implementation of Pendo to establish a continuous user feedback loop, leveraging behavioral analytics to inform design improvements.",
-      ],
+      description: "I'm currently architecting the AI and Data product strategy, establishing a unified data platform to power intelligence across our core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using that behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
     },
     {
+      period: "March 2022 – August 2025",
       title: "Director of Product Management",
       company: "Digimarc",
-      period: "March 2022 – August 2025",
-      highlights: [
-        "Led a global team of Product Managers overseeing a portfolio of enterprise SaaS products built on a unified platform.",
-        "Unified EVRYTHNG and Digimarc technologies into a next-gen SaaS platform, launching the first product in 8 months.",
-        "Secured a landmark deal with Unilever for the world's biggest implementation of digitized products with GS1 Digital Link QR codes.",
-        "Drove portfolio prioritization achieving 18% YoY ARR growth in 2024.",
-        "Implemented a self-service strategy reducing onboarding time by 67% and shortening sales cycles by 25%.",
-      ],
+      description: "Following the acquisition of EVRYTHNG, I stepped up to lead the global product team and oversee our new unified platform. It was a massive integration effort - I'm especially proud that we launched our first combined product in just eight months and secured a landmark deal with Unilever for the world's largest deployment of GS1 Digital Link QR codes. I also managed the business side of the portfolio, driving 18% ARR growth by simplifying SaaS pricing to shorten deal cycles and introducing self-service strategies that slashed onboarding time by 67%.",
     },
     {
+      period: "January 2019 – March 2022",
       title: "Senior Product Manager",
       company: "EVRYTHNG (Acquired by Digimarc)",
-      period: "January 2019 – March 2022",
-      highlights: [
-        "Led strategy and launch of a data-driven anti-counterfeiting product, scaling to 3M authentication events in 2022.",
-        "Secured investment to extend the product's scope into unauthorized trade detection.",
-        "Led a World Economic Forum proof-of-concept project to authenticate apparel in the secondary market.",
-      ],
+      description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our intelligence with marking tech was a key driver in Digimarc's decision to acquire the company.",
     },
     {
-      title: "Senior Product Manager",
-      company: "Sensormatic",
-      period: "January 2017 – December 2018",
-      highlights: [
-        "Led transition of RFID mobile and web solutions from on-prem to SaaS, accelerating time-to-value.",
-      ],
-    },
-    {
+      period: "December 2014 – January 2017",
       title: "Business Solutions Manager",
       company: "Sensormatic",
-      period: "December 2014 – January 2017",
-      highlights: [
-        "Built and led a professional services business analysis team for Europe.",
-        "Acted as lead business analyst on global RFID implementations and pre-sales solution design.",
-      ],
+      description: "I built and led the professional services business analysis team for Europe. I kept my hand in the details too - acting as lead analyst on global RFID implementations and crafting solution designs during the pre-sales process.",
     },
     {
+      period: "May 2014 – December 2014",
       title: "Operational Transformation Consultant",
       company: "KPMG",
-      period: "May 2014 – December 2014",
-      highlights: [
-        "Project managed cross-functional work packages for the relaunch of the Egg financial services brand.",
-        "Led Consultant in the successful delivery of a target operating model for Shawbrook Bank.",
-      ],
+      description: "In this consulting role, I jumped into two major transformations. I project managed cross-functional teams for the relaunch of the Egg financial services brand, and served as Lead Consultant to deliver a new target operating model for Shawbrook Bank - streamlining their operations and defining their future structure.",
     },
     {
+      period: "February 2012 – May 2014",
       title: "Business Analysis Manager",
       company: "Asda",
-      period: "February 2012 – May 2014",
-      highlights: [
-        "Defined and launched the RFID inventory management product roadmap and strategy for Asda.",
-        "Coached and mentored 40 Business Analysts across business case development and benefits management.",
-      ],
+      description: "I focused heavily on strategy in this role, defining and launching the roadmap for Asda's RFID inventory management. Beyond the technology, I dedicated significant time to capability building - coaching and mentoring 40 Business Analysts on everything from business case development to benefits management.",
+    },
+    {
+      period: "April 2011 – February 2012",
+      title: "Business Analyst",
+      company: "Republic Retail",
+      description: "I drove the delivery of high-profile omnichannel initiatives, including the Click & Collect and In-Store Ordering programmes. To ensure we stayed user-centric, I established continuous product discovery channels - running frontline roundtables to verify that user feedback actually drove improvements for the Click & Collect service.",
+    },
+    {
+      period: "September 2007 – April 2011",
+      title: "Business Analyst (Graduate Programme)",
+      company: "Asda",
+      description: "I started my career on the Graduate Programme, conducting the deep-dive analysis needed for a major SAP payment systems cutover to mitigate transitional risk. I also cut my teeth on M&A integration, leading a critical HR system workstream that consolidated back-office support teams.",
     },
   ];
 
@@ -118,11 +91,11 @@ const Resume = () => {
   ];
 
   const certifications = [
-    "First Class BA (Hons) Business – Manchester Metropolitan University",
-    "Certified Pendo Administrator",
+    "First Class BA (Hons) Business – Manchester Metropolitan University Business School",
     "GS1 Standards Professional",
     "Certified Scrum Product Owner (CSPO)",
-    "Business Analyst of the Year (IIBA)",
+    "Certified Pendo Administrator",
+    "Business Analyst of the Year, awarded by the IIBA",
   ];
 
   return (
@@ -141,32 +114,11 @@ const Resume = () => {
           </p>
         </motion.div>
 
-        {/* Experience */}
-        <section className="mb-16">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-2xl font-serif font-medium mb-8"
-          >
-            Experience
-          </motion.h2>
-          <div>
-            {experiences.map((exp, index) => (
-              <ExperienceItem
-                key={index}
-                {...exp}
-                delay={0.3 + index * 0.1}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Skills */}
+        {/* Core Skills - Now at the top */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.2 }}
           className="mb-16"
         >
           <h2 className="text-2xl font-serif font-medium mb-6">Core Skills</h2>
@@ -181,6 +133,27 @@ const Resume = () => {
             ))}
           </div>
         </motion.section>
+
+        {/* Experience */}
+        <section className="mb-16">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-2xl font-serif font-medium mb-8"
+          >
+            Experience
+          </motion.h2>
+          <div className="space-y-6">
+            {experiences.map((exp, index) => (
+              <ExperienceItem
+                key={index}
+                {...exp}
+                delay={0.4 + index * 0.1}
+              />
+            ))}
+          </div>
+        </section>
 
         {/* Education & Certifications */}
         <motion.section
