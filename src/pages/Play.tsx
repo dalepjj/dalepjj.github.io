@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion } from "framer-motion";
-import { User, Bug, Maximize2, Ban, Coffee, MessageCircle } from "lucide-react";
+import { motion, useAnimationFrame } from "framer-motion";
+import { Bug, Maximize2, Ban, Coffee, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -16,20 +16,70 @@ interface GameObject {
   type: "bug" | "scope" | "blocker" | "coffee" | "insight";
 }
 
+interface Cloud {
+  x: number;
+  y: number;
+  size: number;
+  speed: number;
+}
+
+interface GroundSegment {
+  x: number;
+  height: number;
+  width: number;
+}
+
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 300;
 const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12;
-const INITIAL_SPEED = 4;
+const INITIAL_SPEED = 4.4; // 10% faster than 4
 const WIN_SCORE = 1000;
 const MIN_OBJECT_SPACING = 300;
+
+// Audio context for beeps
+const createBeep = (frequency: number, duration: number, volume: number = 0.1) => {
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.value = frequency;
+  oscillator.type = "square";
+  gainNode.gain.value = volume;
+  
+  oscillator.start();
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+  oscillator.stop(audioContext.currentTime + duration);
+};
+
+const playJumpBeep = () => {
+  try {
+    createBeep(600, 0.08, 0.08);
+  } catch (e) {
+    // Audio not supported
+  }
+};
+
+const playMilestoneBeep = () => {
+  try {
+    createBeep(800, 0.15, 0.1);
+    setTimeout(() => createBeep(1000, 0.15, 0.1), 100);
+  } catch (e) {
+    // Audio not supported
+  }
+};
 
 const Play = () => {
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const lastSpeedIncreaseRef = useRef<number>(0);
+  const lastMilestoneRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
   
   const [gameState, setGameState] = useState<GameState>("start");
   const [score, setScore] = useState(0);
@@ -39,6 +89,9 @@ const Play = () => {
   const [objects, setObjects] = useState<GameObject[]>([]);
   const [speed, setSpeed] = useState(INITIAL_SPEED);
   const [gameTime, setGameTime] = useState(0);
+  const [clouds, setClouds] = useState<Cloud[]>([]);
+  const [groundSegments, setGroundSegments] = useState<GroundSegment[]>([]);
+  const [legPhase, setLegPhase] = useState(0);
   const lastSpawnXRef = useRef<number>(GAME_WIDTH);
 
   const playerYRef = useRef(playerY);
@@ -49,6 +102,33 @@ const Play = () => {
   const scoreRef = useRef(score);
   const gameTimeRef = useRef(gameTime);
   const gameStateRef = useRef(gameState);
+
+  // Initialize clouds and ground
+  useEffect(() => {
+    const initialClouds: Cloud[] = [];
+    for (let i = 0; i < 4; i++) {
+      initialClouds.push({
+        x: Math.random() * GAME_WIDTH,
+        y: 30 + Math.random() * 60,
+        size: 20 + Math.random() * 30,
+        speed: 0.5 + Math.random() * 0.5
+      });
+    }
+    setClouds(initialClouds);
+
+    const initialGround: GroundSegment[] = [];
+    let x = 0;
+    while (x < GAME_WIDTH + 100) {
+      const width = 20 + Math.random() * 40;
+      initialGround.push({
+        x,
+        height: 2 + Math.random() * 6,
+        width
+      });
+      x += width;
+    }
+    setGroundSegments(initialGround);
+  }, []);
 
   useEffect(() => {
     playerYRef.current = playerY;
@@ -90,6 +170,7 @@ const Play = () => {
 
   const jump = useCallback(() => {
     if (!isJumpingRef.current && gameStateRef.current === "playing") {
+      playJumpBeep();
       setVelocity(JUMP_FORCE);
       setIsJumping(true);
     }
@@ -101,11 +182,9 @@ const Play = () => {
     let y: number;
     
     if (rand < 0.25) {
-      // Collectibles (floating) - slightly higher chance
       type = rand < 0.125 ? "coffee" : "insight";
       y = GROUND_Y - PLAYER_SIZE - 50 - Math.random() * 40;
     } else {
-      // Obstacles (on ground)
       const obstacleRand = Math.random();
       if (obstacleRand < 0.33) type = "bug";
       else if (obstacleRand < 0.66) type = "scope";
@@ -145,6 +224,7 @@ const Play = () => {
     setGameTime(0);
     lastSpeedIncreaseRef.current = 0;
     lastSpawnXRef.current = GAME_WIDTH;
+    lastMilestoneRef.current = 0;
   };
 
   const startGame = () => {
@@ -152,26 +232,60 @@ const Play = () => {
     setGameState("playing");
   };
 
-  const gameLoop = useCallback(() => {
+  const gameLoop = useCallback((timestamp: number) => {
     if (gameStateRef.current !== "playing") return;
+
+    // Calculate delta time for smooth animation
+    const deltaTime = lastTimeRef.current ? (timestamp - lastTimeRef.current) / 16.67 : 1;
+    lastTimeRef.current = timestamp;
+
+    // Animate legs
+    setLegPhase(prev => (prev + 0.3 * deltaTime) % (Math.PI * 2));
+
+    // Update clouds
+    setClouds(prev => prev.map(cloud => ({
+      ...cloud,
+      x: cloud.x - cloud.speed * deltaTime < -50 ? GAME_WIDTH + 50 : cloud.x - cloud.speed * deltaTime
+    })));
+
+    // Update ground segments
+    setGroundSegments(prev => {
+      const newSegments = prev.map(seg => ({
+        ...seg,
+        x: seg.x - speedRef.current * deltaTime
+      }));
+      
+      // Remove segments that are off screen and add new ones
+      const filtered = newSegments.filter(seg => seg.x + seg.width > -50);
+      const rightmost = Math.max(...filtered.map(s => s.x + s.width));
+      
+      if (rightmost < GAME_WIDTH + 50) {
+        filtered.push({
+          x: rightmost,
+          height: 2 + Math.random() * 6,
+          width: 20 + Math.random() * 40
+        });
+      }
+      
+      return filtered;
+    });
 
     // Update game time
     setGameTime(prev => {
-      const newTime = prev + 16.67; // ~60fps
+      const newTime = prev + 16.67 * deltaTime;
       
-      // Increase speed every 15 seconds (slower progression)
       if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
-        setSpeed(s => Math.min(s + 0.3, 8));
+        setSpeed(s => Math.min(s + 0.3, 8.8)); // 10% faster max (8 * 1.1)
         lastSpeedIncreaseRef.current = newTime;
       }
       
       return newTime;
     });
 
-    // Update player physics
-    setVelocity(prev => prev + GRAVITY);
+    // Update player physics with deltaTime
+    setVelocity(prev => prev + GRAVITY * deltaTime);
     setPlayerY(prev => {
-      const newY = prev + velocityRef.current;
+      const newY = prev + velocityRef.current * deltaTime;
       if (newY >= GROUND_Y - PLAYER_SIZE) {
         setIsJumping(false);
         setVelocity(0);
@@ -182,7 +296,15 @@ const Play = () => {
 
     // Update score (distance)
     setScore(prev => {
-      const newScore = prev + 0.1;
+      const newScore = prev + 0.1 * deltaTime;
+      
+      // Check for 100-user milestones
+      const currentMilestone = Math.floor(newScore / 100);
+      if (currentMilestone > lastMilestoneRef.current && newScore < WIN_SCORE) {
+        lastMilestoneRef.current = currentMilestone;
+        playMilestoneBeep();
+      }
+      
       if (newScore >= WIN_SCORE) {
         setGameState("win");
         triggerConfetti();
@@ -191,7 +313,7 @@ const Play = () => {
       return newScore;
     });
 
-    // Spawn objects with proper spacing (no overlapping)
+    // Spawn objects with proper spacing
     const rightmostObject = objectsRef.current.reduce((max, obj) => Math.max(max, obj.x), 0);
     const canSpawn = rightmostObject < GAME_WIDTH - MIN_OBJECT_SPACING;
     
@@ -204,13 +326,13 @@ const Play = () => {
       const player = { x: 60, y: playerYRef.current, width: PLAYER_SIZE, height: PLAYER_SIZE };
       
       return prev
-        .map(obj => ({ ...obj, x: obj.x - speedRef.current }))
+        .map(obj => ({ ...obj, x: obj.x - speedRef.current * deltaTime }))
         .filter(obj => {
           if (obj.x < -50) return false;
           
           if (checkCollision(player, obj)) {
             if (obj.type === "coffee" || obj.type === "insight") {
-              setScore(s => s + 10);
+              setScore(s => s + 20); // Changed to +20
               return false;
             } else {
               setGameState("gameover");
@@ -226,6 +348,7 @@ const Play = () => {
 
   useEffect(() => {
     if (gameState === "playing") {
+      lastTimeRef.current = 0;
       animationRef.current = requestAnimationFrame(gameLoop);
     }
     return () => {
@@ -235,7 +358,19 @@ const Play = () => {
     };
   }, [gameState, gameLoop]);
 
+  // Global click/tap handler for jumping
   useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Check if click is on a navigation link or button (except the game area during play)
+      const target = e.target as HTMLElement;
+      const isNavigationOrButton = target.closest('a') || target.closest('button');
+      
+      if (gameState === "playing" && !isNavigationOrButton) {
+        e.preventDefault();
+        jump();
+      }
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
         e.preventDefault();
@@ -247,15 +382,14 @@ const Play = () => {
       }
     };
 
+    window.addEventListener("click", handleGlobalClick);
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [gameState, jump]);
-
-  const handleTouch = () => {
-    if (gameState === "playing") {
-      jump();
-    }
-  };
 
   const renderIcon = (type: GameObject["type"]) => {
     const iconClass = "w-full h-full";
@@ -267,10 +401,53 @@ const Play = () => {
       case "blocker":
         return <Ban className={`${iconClass} text-slate-500`} />;
       case "coffee":
-        return <Coffee className={`${iconClass} text-primary`} />;
+        return <Coffee className={`${iconClass} text-slate-500`} />;
       case "insight":
-        return <MessageCircle className={`${iconClass} text-primary`} />;
+        return <MessageCircle className={`${iconClass} text-slate-500`} />;
     }
+  };
+
+  // Running person SVG with animated legs
+  const RunningPerson = () => {
+    const legSwing = Math.sin(legPhase) * 25;
+    const armSwing = Math.sin(legPhase) * 20;
+    
+    return (
+      <svg viewBox="0 0 40 40" className="w-full h-full">
+        {/* Head */}
+        <circle cx="20" cy="8" r="6" fill="#6b7280" />
+        {/* Body */}
+        <line x1="20" y1="14" x2="20" y2="26" stroke="#6b7280" strokeWidth="3" strokeLinecap="round" />
+        {/* Left arm */}
+        <line 
+          x1="20" y1="18" 
+          x2={16 - armSwing * 0.15} 
+          y2={24 + Math.abs(armSwing) * 0.1} 
+          stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" 
+        />
+        {/* Right arm */}
+        <line 
+          x1="20" y1="18" 
+          x2={24 + armSwing * 0.15} 
+          y2={24 - Math.abs(armSwing) * 0.1} 
+          stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" 
+        />
+        {/* Left leg */}
+        <line 
+          x1="20" y1="26" 
+          x2={16 + legSwing * 0.3} 
+          y2={38} 
+          stroke="#6b7280" strokeWidth="3" strokeLinecap="round" 
+        />
+        {/* Right leg */}
+        <line 
+          x1="20" y1="26" 
+          x2={24 - legSwing * 0.3} 
+          y2={38} 
+          stroke="#6b7280" strokeWidth="3" strokeLinecap="round" 
+        />
+      </svg>
+    );
   };
 
   return (
@@ -285,7 +462,9 @@ const Play = () => {
           >
             <h1 className="section-title mb-4">Sprint Runner</h1>
             <p className="body-text max-w-xl mx-auto">
-              Navigate the chaos of product development. Dodge bugs and scope creep to achieve product-market fit!
+              Navigate the chaos of product development.
+              <br />
+              Dodge bugs and scope creep to achieve product-market fit!
             </p>
           </motion.div>
 
@@ -297,39 +476,71 @@ const Play = () => {
           >
             <div
               ref={gameRef}
-              className="relative bg-card border border-border rounded-2xl overflow-hidden select-none"
+              className="relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none"
               style={{ 
                 width: "100%", 
                 maxWidth: GAME_WIDTH, 
                 height: GAME_HEIGHT,
                 touchAction: "none"
               }}
-              onClick={handleTouch}
             >
+              {/* Clouds */}
+              {clouds.map((cloud, index) => (
+                <div
+                  key={`cloud-${index}`}
+                  className="absolute opacity-40"
+                  style={{
+                    left: cloud.x,
+                    top: cloud.y,
+                    width: cloud.size,
+                    height: cloud.size * 0.6,
+                  }}
+                >
+                  <svg viewBox="0 0 100 60" className="w-full h-full">
+                    <ellipse cx="30" cy="40" rx="25" ry="18" fill="#9ca3af" />
+                    <ellipse cx="55" cy="35" rx="30" ry="22" fill="#9ca3af" />
+                    <ellipse cx="75" cy="42" rx="20" ry="15" fill="#9ca3af" />
+                  </svg>
+                </div>
+              ))}
+
               {/* Score */}
-              <div className="absolute top-4 right-4 text-sm font-medium text-foreground">
-                Users Acquired: <span className="text-primary font-bold">{Math.floor(score)}</span>
+              <div className="absolute top-4 right-4 text-sm font-medium text-slate-600">
+                Users Acquired: <span className="text-slate-800 font-bold">{Math.floor(score)}</span>
               </div>
 
-              {/* Ground */}
-              <div 
-                className="absolute left-0 right-0 border-b-2 border-foreground/20"
-                style={{ top: GROUND_Y }}
-              />
+              {/* Ground with uneven terrain */}
+              <div className="absolute left-0 right-0" style={{ top: GROUND_Y }}>
+                {groundSegments.map((seg, index) => (
+                  <div
+                    key={`ground-${index}`}
+                    className="absolute bg-slate-400"
+                    style={{
+                      left: seg.x,
+                      top: -seg.height / 2,
+                      width: seg.width,
+                      height: seg.height,
+                      borderRadius: '1px'
+                    }}
+                  />
+                ))}
+                {/* Base ground line */}
+                <div className="absolute left-0 right-0 h-0.5 bg-slate-400" />
+              </div>
 
-              {/* Player */}
+              {/* Player - Running Person */}
               <div
-                className="absolute transition-none"
+                className="absolute"
                 style={{
                   left: 60,
                   top: playerY,
                   width: PLAYER_SIZE,
                   height: PLAYER_SIZE,
+                  willChange: 'transform',
+                  transform: 'translateZ(0)'
                 }}
               >
-                <div className="w-full h-full bg-primary/20 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary" />
-                </div>
+                <RunningPerson />
               </div>
 
               {/* Objects */}
@@ -342,6 +553,8 @@ const Play = () => {
                     top: obj.y,
                     width: obj.width,
                     height: obj.height,
+                    willChange: 'transform',
+                    transform: 'translateZ(0)'
                   }}
                 >
                   {renderIcon(obj.type)}
@@ -408,9 +621,9 @@ const Play = () => {
             transition={{ delay: 0.4 }}
             className="text-center mt-6 text-xs text-muted-foreground"
           >
-            <p className="mb-1">
+            <p className="mb-3">
               <Coffee className="inline w-4 h-4 mr-1" /> Coffee & 
-              <MessageCircle className="inline w-4 h-4 mx-1" /> Insights = +10 Users
+              <MessageCircle className="inline w-4 h-4 mx-1" /> Insights = +20 Users
             </p>
             <p>
               Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
