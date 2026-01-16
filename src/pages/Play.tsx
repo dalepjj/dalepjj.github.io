@@ -20,10 +20,11 @@ const GAME_WIDTH = 800;
 const GAME_HEIGHT = 300;
 const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
-const GRAVITY = 0.8;
-const JUMP_FORCE = -14;
-const INITIAL_SPEED = 5;
+const GRAVITY = 0.6;
+const JUMP_FORCE = -12;
+const INITIAL_SPEED = 4;
 const WIN_SCORE = 1000;
+const MIN_OBJECT_SPACING = 300;
 
 const Play = () => {
   const gameRef = useRef<HTMLDivElement>(null);
@@ -38,6 +39,7 @@ const Play = () => {
   const [objects, setObjects] = useState<GameObject[]>([]);
   const [speed, setSpeed] = useState(INITIAL_SPEED);
   const [gameTime, setGameTime] = useState(0);
+  const lastSpawnXRef = useRef<number>(GAME_WIDTH);
 
   const playerYRef = useRef(playerY);
   const velocityRef = useRef(velocity);
@@ -98,10 +100,10 @@ const Play = () => {
     let type: GameObject["type"];
     let y: number;
     
-    if (rand < 0.2) {
-      // Collectibles (floating)
-      type = rand < 0.1 ? "coffee" : "insight";
-      y = GROUND_Y - PLAYER_SIZE - 40 - Math.random() * 60;
+    if (rand < 0.25) {
+      // Collectibles (floating) - slightly higher chance
+      type = rand < 0.125 ? "coffee" : "insight";
+      y = GROUND_Y - PLAYER_SIZE - 50 - Math.random() * 40;
     } else {
       // Obstacles (on ground)
       const obstacleRand = Math.random();
@@ -111,8 +113,11 @@ const Play = () => {
       y = GROUND_Y - 30;
     }
 
+    const spawnX = GAME_WIDTH + 50;
+    lastSpawnXRef.current = spawnX;
+
     return {
-      x: GAME_WIDTH + 50,
+      x: spawnX,
       y,
       width: 30,
       height: 30,
@@ -139,6 +144,7 @@ const Play = () => {
     setSpeed(INITIAL_SPEED);
     setGameTime(0);
     lastSpeedIncreaseRef.current = 0;
+    lastSpawnXRef.current = GAME_WIDTH;
   };
 
   const startGame = () => {
@@ -153,9 +159,9 @@ const Play = () => {
     setGameTime(prev => {
       const newTime = prev + 16.67; // ~60fps
       
-      // Increase speed every 10 seconds
-      if (Math.floor(newTime / 10000) > Math.floor(lastSpeedIncreaseRef.current / 10000)) {
-        setSpeed(s => Math.min(s + 0.5, 12));
+      // Increase speed every 15 seconds (slower progression)
+      if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
+        setSpeed(s => Math.min(s + 0.3, 8));
         lastSpeedIncreaseRef.current = newTime;
       }
       
@@ -185,8 +191,11 @@ const Play = () => {
       return newScore;
     });
 
-    // Spawn objects randomly
-    if (Math.random() < 0.02) {
+    // Spawn objects with proper spacing (no overlapping)
+    const rightmostObject = objectsRef.current.reduce((max, obj) => Math.max(max, obj.x), 0);
+    const canSpawn = rightmostObject < GAME_WIDTH - MIN_OBJECT_SPACING;
+    
+    if (canSpawn && Math.random() < 0.015) {
       setObjects(prev => [...prev, spawnObject()]);
     }
 
@@ -252,11 +261,11 @@ const Play = () => {
     const iconClass = "w-full h-full";
     switch (type) {
       case "bug":
-        return <Bug className={`${iconClass} text-destructive`} />;
+        return <Bug className={`${iconClass} text-slate-500`} />;
       case "scope":
-        return <Maximize2 className={`${iconClass} text-destructive`} />;
+        return <Maximize2 className={`${iconClass} text-slate-500`} />;
       case "blocker":
-        return <Ban className={`${iconClass} text-destructive`} />;
+        return <Ban className={`${iconClass} text-slate-500`} />;
       case "coffee":
         return <Coffee className={`${iconClass} text-primary`} />;
       case "insight":
@@ -343,7 +352,8 @@ const Play = () => {
               {gameState === "start" && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">Ready for the Sprint?</h2>
-                  <p className="text-muted-foreground text-sm mb-6">Dodge bugs and scope creep to launch!</p>
+                  <p className="text-muted-foreground text-sm mb-1">Dodge bugs and scope creep</p>
+                  <p className="text-muted-foreground text-sm mb-6">to achieve product-market fit!</p>
                   <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
                     Start Game
                   </Button>
@@ -354,7 +364,7 @@ const Play = () => {
               {/* Game Over Screen */}
               {gameState === "gameover" && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-                  <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2 text-destructive">Sprint Failed!</h2>
+                  <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2 text-primary">Sprint Failed!</h2>
                   <p className="text-muted-foreground text-sm mb-2">
                     You acquired <span className="font-bold text-foreground">{Math.floor(score)}</span> users
                   </p>
@@ -398,9 +408,11 @@ const Play = () => {
             transition={{ delay: 0.4 }}
             className="text-center mt-6 text-xs text-muted-foreground"
           >
-            <p>
+            <p className="mb-1">
               <Coffee className="inline w-4 h-4 mr-1" /> Coffee & 
-              <MessageCircle className="inline w-4 h-4 mx-1" /> Insights = +10 Users | 
+              <MessageCircle className="inline w-4 h-4 mx-1" /> Insights = +10 Users
+            </p>
+            <p>
               Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
               <Maximize2 className="inline w-4 h-4 mx-1" /> Scope Creep & 
               <Ban className="inline w-4 h-4 mx-1" /> Blockers

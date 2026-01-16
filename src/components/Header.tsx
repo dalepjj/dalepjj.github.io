@@ -27,9 +27,9 @@ const Header = () => {
           <span className="font-serif text-lg tracking-tight">Dale Jacobs</span>
         </Link>
         
-        <nav className="flex items-center gap-6">
+        <nav className="flex items-center gap-3 sm:gap-6">
           {navItems.map((item, index) => (
-            <div key={item.name} className="flex items-center gap-6">
+            <div key={item.name} className="flex items-center gap-3 sm:gap-6">
               <Link
                 to={item.path}
                 className={`nav-link ${
