@@ -144,7 +144,7 @@ const Resume = () => {
           >
             Experience
           </motion.h2>
-          <div className="space-y-6">
+          <div className="space-y-10">
             {experiences.map((exp, index) => (
               <ExperienceItem
                 key={index}
