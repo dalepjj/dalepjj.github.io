@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Skull, Bomb, ShieldOff, Sparkles, Lightbulb } from "lucide-react";
+import { Bug, Bomb, ShieldOff, Sparkles, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -35,7 +35,7 @@ const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12;
-const INITIAL_SPEED = 4.4; // 10% faster than 4
+const INITIAL_SPEED = 5.06; // 15% faster than 4.4
 const WIN_SCORE = 1000;
 const MIN_OBJECT_SPACING = 300;
 
@@ -286,7 +286,7 @@ const Play = () => {
       const newTime = prev + 16.67 * deltaTime;
       
       if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
-        setSpeed(s => Math.min(s + 0.33, 9.68)); // 10% faster progression (0.3 * 1.1, 8.8 * 1.1)
+        setSpeed(s => Math.min(s + 0.38, 11.13)); // 15% faster progression
         lastSpeedIncreaseRef.current = newTime;
       }
       
@@ -406,7 +406,7 @@ const Play = () => {
     const iconClass = "w-full h-full";
     switch (type) {
       case "bug":
-        return <Skull className={`${iconClass} text-slate-500`} />;
+        return <Bug className={`${iconClass} text-slate-500`} />;
       case "scope":
         return <Bomb className={`${iconClass} text-slate-500`} />;
       case "blocker":
@@ -630,11 +630,11 @@ const Play = () => {
             className="text-center mt-6 text-xs text-muted-foreground"
           >
             <p className="mb-3">
-              <Sparkles className="inline w-4 h-4 mr-1" /> Boost & 
+              <Sparkles className="inline w-4 h-4 mr-1" /> Automation & 
               <Lightbulb className="inline w-4 h-4 mx-1" /> Insights = +20 Users
             </p>
             <p>
-              Avoid <Skull className="inline w-4 h-4 mx-1" /> Bugs, 
+              Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
               <Bomb className="inline w-4 h-4 mx-1" /> Scope Creep & 
               <ShieldOff className="inline w-4 h-4 mx-1" /> Blockers
             </p>
