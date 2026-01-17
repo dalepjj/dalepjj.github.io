@@ -175,6 +175,23 @@ const Play = () => {
   const [showHint, setShowHint] = useState(false);
   const [hasPlayedBefore, setHasPlayedBefore] = useState(true);
   const [hasJumpedThisGame, setHasJumpedThisGame] = useState(false);
+  
+  // Container size tracking for responsive scaling
+  const [containerWidth, setContainerWidth] = useState(GAME_WIDTH);
+  const scaleFactor = containerWidth / GAME_WIDTH;
+
+  // Track container size for proportional scaling
+  useEffect(() => {
+    const updateSize = () => {
+      if (gameRef.current) {
+        setContainerWidth(gameRef.current.clientWidth);
+      }
+    };
+    
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   // Load high score and played status on mount
   useEffect(() => {
@@ -857,7 +874,7 @@ const Play = () => {
               style={{ 
                 width: "100%", 
                 maxWidth: GAME_WIDTH, 
-                height: GAME_HEIGHT,
+                aspectRatio: `${GAME_WIDTH} / ${GAME_HEIGHT}`,
                 touchAction: "none",
                 background: `linear-gradient(to bottom, ${theme.bgFrom}, ${theme.bgTo})`,
                 transition: 'background 2s ease',
@@ -889,10 +906,10 @@ const Play = () => {
                   key={`cloud-${index}`}
                   className="absolute transition-opacity duration-1000"
                   style={{
-                    left: cloud.x,
-                    top: cloud.y,
-                    width: cloud.size,
-                    height: cloud.size * 0.6,
+                    left: cloud.x * scaleFactor,
+                    top: cloud.y * scaleFactor,
+                    width: cloud.size * scaleFactor,
+                    height: cloud.size * 0.6 * scaleFactor,
                     opacity: theme.cloudOpacity
                   }}
                 >
@@ -934,7 +951,7 @@ const Play = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   className="absolute z-30 flex items-center gap-2"
-                  style={{ left: 60, top: playerY - 50 }}
+                  style={{ left: 60 * scaleFactor, top: (playerY - 50) * scaleFactor }}
                 >
                   <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-sm font-medium text-slate-700">
                     Tap or Space to Jump!
@@ -955,10 +972,10 @@ const Play = () => {
                   key={particle.id}
                   className="absolute rounded-full pointer-events-none"
                   style={{
-                    left: particle.x,
-                    top: particle.y,
-                    width: particle.type === 'dust' ? 3 : 6,
-                    height: particle.type === 'dust' ? 3 : 6,
+                    left: particle.x * scaleFactor,
+                    top: particle.y * scaleFactor,
+                    width: (particle.type === 'dust' ? 3 : 6) * scaleFactor,
+                    height: (particle.type === 'dust' ? 3 : 6) * scaleFactor,
                     backgroundColor: particle.color,
                     opacity: particle.life / particle.maxLife,
                     transform: particle.type === 'sparkle' ? 'rotate(45deg)' : undefined
@@ -967,16 +984,16 @@ const Play = () => {
               ))}
 
               {/* Ground with uneven terrain */}
-              <div className="absolute left-0 right-0" style={{ top: GROUND_Y }}>
+              <div className="absolute left-0 right-0" style={{ top: GROUND_Y * scaleFactor }}>
                 {groundSegments.map((seg, index) => (
                   <div
                     key={`ground-${index}`}
                     className="absolute bg-slate-400"
                     style={{
-                      left: seg.x,
-                      top: -seg.height / 2,
-                      width: seg.width,
-                      height: seg.height,
+                      left: seg.x * scaleFactor,
+                      top: (-seg.height / 2) * scaleFactor,
+                      width: seg.width * scaleFactor,
+                      height: seg.height * scaleFactor,
                       borderRadius: '1px'
                     }}
                   />
@@ -990,10 +1007,10 @@ const Play = () => {
                   key={`trail-${index}`}
                   className="absolute pointer-events-none"
                   style={{
-                    left: trail.x - index * 8,
-                    top: trail.y,
-                    width: PLAYER_SIZE,
-                    height: PLAYER_SIZE,
+                    left: (trail.x - index * 8) * scaleFactor,
+                    top: trail.y * scaleFactor,
+                    width: PLAYER_SIZE * scaleFactor,
+                    height: PLAYER_SIZE * scaleFactor,
                     opacity: trail.opacity * 0.3
                   }}
                 >
@@ -1005,10 +1022,10 @@ const Play = () => {
               <div
                 className="absolute"
                 style={{
-                  left: 60,
-                  top: playerY,
-                  width: PLAYER_SIZE,
-                  height: PLAYER_SIZE,
+                  left: 60 * scaleFactor,
+                  top: playerY * scaleFactor,
+                  width: PLAYER_SIZE * scaleFactor,
+                  height: PLAYER_SIZE * scaleFactor,
                   willChange: 'transform',
                   transform: 'translateZ(0)'
                 }}
@@ -1022,10 +1039,10 @@ const Play = () => {
                   key={index}
                   className="absolute"
                   style={{
-                    left: obj.x,
-                    top: obj.y,
-                    width: obj.width,
-                    height: obj.height,
+                    left: obj.x * scaleFactor,
+                    top: obj.y * scaleFactor,
+                    width: obj.width * scaleFactor,
+                    height: obj.height * scaleFactor,
                     willChange: 'transform',
                     transform: 'translateZ(0)'
                   }}
