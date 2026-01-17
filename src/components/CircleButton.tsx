@@ -25,6 +25,7 @@ const CircleButton = ({ to, label, variant = "resume", delay = 0 }: CircleButton
       <Link
         to={to}
         className={`${baseClasses} ${variantClasses[variant]}`}
+        aria-label={`Go to ${label} page`}
       >
         {label}
       </Link>

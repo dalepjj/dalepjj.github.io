@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { ArrowUpRight } from "lucide-react";
 
 interface WorkItemProps {
@@ -99,6 +100,11 @@ const Work = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Work"
+        description="Featured projects in product digitisation, anti-counterfeiting, supply chain transparency, and circular economy innovation."
+        path="/work"
+      />
       <div className="content-container py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 
 interface ExperienceItemProps {
   period: string;
@@ -100,6 +101,11 @@ const Resume = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Resume"
+        description="Professional experience in B2B SaaS product management. 18+ years building and scaling platforms, leading teams, and driving growth."
+        path="/resume"
+      />
       <div className="content-container py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

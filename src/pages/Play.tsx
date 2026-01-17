@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 
 type GameState = "start" | "playing" | "gameover" | "win";
 
@@ -92,6 +93,7 @@ const Play = () => {
   const lastMilestoneRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   
+  const [isLoading, setIsLoading] = useState(true);
   const [gameState, setGameState] = useState<GameState>("start");
   const [score, setScore] = useState(0);
   const [playerY, setPlayerY] = useState(GROUND_Y - PLAYER_SIZE);
@@ -104,6 +106,16 @@ const Play = () => {
   const [groundSegments, setGroundSegments] = useState<GroundSegment[]>([]);
   const [legPhase, setLegPhase] = useState(0);
   const lastSpawnXRef = useRef<number>(GAME_WIDTH);
+
+  // Initialize loading state
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Initialize audio context on first load
+      getAudioContext();
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const playerYRef = useRef(playerY);
   const velocityRef = useRef(velocity);
@@ -463,6 +475,11 @@ const Play = () => {
 
   return (
     <Layout>
+      <SEO 
+        title="Sprint Runner"
+        description="A fun side-scrolling game about navigating the chaos of product development. Jump over bugs, scope creep, and blockers to achieve product-market fit!"
+        path="/play"
+      />
       <div className="pt-32 pb-20">
         <div className="content-container">
           <motion.div
@@ -485,7 +502,9 @@ const Play = () => {
           >
             <div
               ref={gameRef}
-              className="relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none"
+              role="application"
+              aria-label="Sprint Runner game - Press Space or click/tap to jump"
+              className="game-container relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none"
               style={{ 
                 width: "100%", 
                 maxWidth: GAME_WIDTH, 
@@ -493,6 +512,13 @@ const Play = () => {
                 touchAction: "none"
               }}
             >
+              {/* Loading State */}
+              {isLoading && (
+                <div className="absolute inset-0 bg-background flex flex-col items-center justify-center z-20">
+                  <div className="w-12 h-12 rounded-full border-4 border-coral/30 border-t-coral animate-spin mb-4" />
+                  <p className="text-muted-foreground text-sm">Loading game...</p>
+                </div>
+              )}
               {/* Clouds */}
               {clouds.map((cloud, index) => (
                 <div
@@ -571,11 +597,11 @@ const Play = () => {
               ))}
 
               {/* Start Screen */}
-              {gameState === "start" && (
+              {gameState === "start" && !isLoading && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">Ready for the Sprint?</h2>
                   <p className="text-muted-foreground text-sm mb-6">Acquire 1,000 users to achieve product-market fit!</p>
-                  <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
+                  <Button onClick={startGame} className="bg-primary hover:bg-primary/90" aria-label="Start the game">
                     Start Game
                   </Button>
                   <p className="text-xs text-muted-foreground mt-4">Press Space or Tap to Jump</p>
@@ -593,11 +619,11 @@ const Play = () => {
                     Product Management is hard. Hiring Dale makes it easier.
                   </p>
                   <div className="flex gap-3">
-                    <Button onClick={startGame} variant="outline">
+                    <Button onClick={startGame} variant="outline" aria-label="Try the game again">
                       Try Again
                     </Button>
                     <Button asChild className="bg-primary hover:bg-primary/90">
-                      <Link to="/contact">Contact Dale</Link>
+                      <Link to="/contact" aria-label="Contact Dale about product management">Contact Dale</Link>
                     </Button>
                   </div>
                 </div>
@@ -611,11 +637,11 @@ const Play = () => {
                     You clearly know how to navigate a product launch. So do I.
                   </p>
                   <div className="flex gap-3">
-                    <Button onClick={startGame} variant="outline">
+                    <Button onClick={startGame} variant="outline" aria-label="Play another game">
                       Play Another Sprint
                     </Button>
                     <Button asChild className="bg-primary hover:bg-primary/90">
-                      <Link to="/contact">Let's Build Something Real</Link>
+                      <Link to="/contact" aria-label="Let's collaborate on building something together">Let's Build Something Real</Link>
                     </Button>
                   </div>
                 </div>
