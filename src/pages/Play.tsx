@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Bug, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -642,9 +641,74 @@ const Play = () => {
     };
   }, [gameState, jump]);
 
+  // Custom illustrated Bug icon to match HiPPO style
+  const BugIcon = ({ className = "", style = {} }: { className?: string; style?: React.CSSProperties }) => (
+    <svg viewBox="0 0 40 40" className={`w-full h-full ${className}`} style={style}>
+      {/* Body segments */}
+      <ellipse cx="20" cy="28" rx="10" ry="8" fill="#7f1d1d" />
+      <ellipse cx="20" cy="18" rx="8" ry="7" fill="#991b1b" />
+      <ellipse cx="20" cy="10" rx="6" ry="5" fill="#b91c1c" />
+      {/* Shell pattern on back */}
+      <ellipse cx="17" cy="26" rx="3" ry="4" fill="#991b1b" />
+      <ellipse cx="23" cy="26" rx="3" ry="4" fill="#991b1b" />
+      {/* Eyes - big googly eyes */}
+      <circle cx="15" cy="8" r="4" fill="white" />
+      <circle cx="25" cy="8" r="4" fill="white" />
+      <circle cx="16" cy="9" r="2" fill="#1f2937" />
+      <circle cx="26" cy="9" r="2" fill="#1f2937" />
+      <circle cx="17" cy="8" r="0.8" fill="white" />
+      <circle cx="27" cy="8" r="0.8" fill="white" />
+      {/* Antennae */}
+      <line x1="14" y1="4" x2="10" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="26" y1="4" x2="30" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="10" cy="0" r="1.5" fill="#b91c1c" />
+      <circle cx="30" cy="0" r="1.5" fill="#b91c1c" />
+      {/* Legs */}
+      <line x1="12" y1="20" x2="4" y2="18" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+      <line x1="12" y1="26" x2="4" y2="28" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+      <line x1="12" y1="32" x2="6" y2="38" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+      <line x1="28" y1="20" x2="36" y2="18" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+      <line x1="28" y1="26" x2="36" y2="28" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+      <line x1="28" y1="32" x2="34" y2="38" stroke="#7f1d1d" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+
+  // Custom illustrated Lightbulb icon to match HiPPO style
+  const LightbulbIcon = ({ className = "", style = {} }: { className?: string; style?: React.CSSProperties }) => (
+    <svg viewBox="0 0 40 40" className={`w-full h-full ${className}`} style={style}>
+      {/* Glow rays */}
+      <line x1="20" y1="0" x2="20" y2="4" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      <line x1="6" y1="12" x2="10" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      <line x1="34" y1="12" x2="30" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+      <line x1="8" y1="4" x2="12" y2="8" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      <line x1="32" y1="4" x2="28" y2="8" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+      {/* Bulb glass */}
+      <ellipse cx="20" cy="16" rx="11" ry="12" fill="#fef3c7" />
+      <ellipse cx="20" cy="16" rx="11" ry="12" fill="url(#bulbGradient)" />
+      {/* Inner glow */}
+      <ellipse cx="20" cy="14" rx="7" ry="8" fill="#fde68a" opacity="0.7" />
+      {/* Filament */}
+      <path d="M16 18 Q18 12 20 18 Q22 12 24 18" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
+      {/* Screw base */}
+      <rect x="14" y="27" width="12" height="3" rx="1" fill="#9ca3af" />
+      <rect x="15" y="30" width="10" height="2" rx="0.5" fill="#6b7280" />
+      <rect x="16" y="32" width="8" height="2" rx="0.5" fill="#9ca3af" />
+      <rect x="17" y="34" width="6" height="2" rx="1" fill="#6b7280" />
+      {/* Highlight on glass */}
+      <ellipse cx="15" cy="12" rx="2" ry="3" fill="white" opacity="0.5" />
+      {/* Gradient definition */}
+      <defs>
+        <radialGradient id="bulbGradient" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stopColor="#fef9c3" />
+          <stop offset="100%" stopColor="#fcd34d" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+
   // HiPPO (Highest Paid Person's Opinion) custom icon
-  const HippoIcon = () => (
-    <svg viewBox="0 0 40 40" className="w-full h-full" style={{ animation: 'hippo-bob 0.5s ease-in-out infinite' }}>
+  const HippoIcon = ({ className = "", style = {} }: { className?: string; style?: React.CSSProperties }) => (
+    <svg viewBox="0 0 40 40" className={`w-full h-full ${className}`} style={style}>
       {/* Body - round hippo shape */}
       <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
       {/* Head */}
@@ -671,17 +735,13 @@ const Play = () => {
     switch (type) {
       case "bug":
         return (
-          <Bug 
-            className="w-full h-full text-red-800" 
-            style={{ animation: 'wiggle 0.3s ease-in-out infinite' }}
-          />
+          <BugIcon style={{ animation: 'wiggle 0.3s ease-in-out infinite' }} />
         );
       case "hippo":
-        return <HippoIcon />;
+        return <HippoIcon style={{ animation: 'hippo-bob 0.5s ease-in-out infinite' }} />;
       case "insight":
         return (
-          <Lightbulb 
-            className="w-full h-full text-amber-400"
+          <LightbulbIcon 
             style={{ 
               filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.7))',
               animation: 'glow-pulse 1.5s ease-in-out infinite'
@@ -1054,12 +1114,59 @@ const Play = () => {
             transition={{ delay: 0.4 }}
             className="text-center mt-6 text-xs text-muted-foreground"
           >
-            <p className="mb-3">
-              <Lightbulb className="inline w-4 h-4 mr-1 text-amber-500" /> User Insights = +50 Users
+            <p className="mb-3 flex items-center justify-center gap-1">
+              <span className="inline-block w-5 h-5">
+                <svg viewBox="0 0 40 40" className="w-full h-full">
+                  <line x1="20" y1="0" x2="20" y2="4" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                  <line x1="6" y1="12" x2="10" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                  <line x1="34" y1="12" x2="30" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                  <ellipse cx="20" cy="16" rx="11" ry="12" fill="#fef3c7" />
+                  <ellipse cx="20" cy="14" rx="7" ry="8" fill="#fde68a" opacity="0.7" />
+                  <path d="M16 18 Q18 12 20 18 Q22 12 24 18" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
+                  <rect x="14" y="27" width="12" height="3" rx="1" fill="#9ca3af" />
+                  <rect x="15" y="30" width="10" height="2" rx="0.5" fill="#6b7280" />
+                  <rect x="16" y="32" width="8" height="2" rx="0.5" fill="#9ca3af" />
+                  <rect x="17" y="34" width="6" height="2" rx="1" fill="#6b7280" />
+                  <ellipse cx="15" cy="12" rx="2" ry="3" fill="white" opacity="0.5" />
+                </svg>
+              </span>
+              User Insights = +50 Users
             </p>
-            <p>
-              Avoid <Bug className="inline w-4 h-4 mx-1 text-red-800" /> Bugs &
-              <span className="inline-block mx-1">🦛</span> HiPPOs
+            <p className="flex items-center justify-center gap-1">
+              Avoid
+              <span className="inline-block w-5 h-5 mx-1">
+                <svg viewBox="0 0 40 40" className="w-full h-full">
+                  <ellipse cx="20" cy="28" rx="10" ry="8" fill="#7f1d1d" />
+                  <ellipse cx="20" cy="18" rx="8" ry="7" fill="#991b1b" />
+                  <ellipse cx="20" cy="10" rx="6" ry="5" fill="#b91c1c" />
+                  <circle cx="15" cy="8" r="4" fill="white" />
+                  <circle cx="25" cy="8" r="4" fill="white" />
+                  <circle cx="16" cy="9" r="2" fill="#1f2937" />
+                  <circle cx="26" cy="9" r="2" fill="#1f2937" />
+                  <line x1="14" y1="4" x2="10" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+                  <line x1="26" y1="4" x2="30" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="10" cy="0" r="1.5" fill="#b91c1c" />
+                  <circle cx="30" cy="0" r="1.5" fill="#b91c1c" />
+                </svg>
+              </span>
+              Bugs &
+              <span className="inline-block w-5 h-5 mx-1">
+                <svg viewBox="0 0 40 40" className="w-full h-full">
+                  <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
+                  <circle cx="20" cy="14" r="10" fill="#6b7280" />
+                  <ellipse cx="20" cy="18" rx="6" ry="4" fill="#9ca3af" />
+                  <circle cx="17" cy="17" r="1.5" fill="#4b5563" />
+                  <circle cx="23" cy="17" r="1.5" fill="#4b5563" />
+                  <circle cx="14" cy="11" r="2" fill="white" />
+                  <circle cx="26" cy="11" r="2" fill="white" />
+                  <circle cx="14" cy="11" r="1" fill="#1f2937" />
+                  <circle cx="26" cy="11" r="1" fill="#1f2937" />
+                  <ellipse cx="10" cy="6" rx="3" ry="2" fill="#6b7280" />
+                  <ellipse cx="30" cy="6" rx="3" ry="2" fill="#6b7280" />
+                  <polygon points="20,26 17,30 20,40 23,30" fill="#EF4444" />
+                </svg>
+              </span>
+              HiPPOs
             </p>
           </motion.div>
         </div>
