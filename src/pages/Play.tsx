@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Bug, Bomb, ShieldOff, Sparkles, Lightbulb } from "lucide-react";
+import { Bug, Bomb, ShieldOff, Sparkles, Lightbulb, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -30,15 +30,50 @@ interface GroundSegment {
   width: number;
 }
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  maxLife: number;
+  type: 'dust' | 'sparkle';
+  color: string;
+}
+
+interface TrailPosition {
+  x: number;
+  y: number;
+  opacity: number;
+}
+
+// Time-of-day theme definitions
+interface TimeTheme {
+  bgFrom: string;
+  bgTo: string;
+  cloudColor: string;
+  cloudOpacity: number;
+}
+
+const TIME_THEMES: TimeTheme[] = [
+  { bgFrom: '#dbeafe', bgTo: '#fef3c7', cloudColor: '#9ca3af', cloudOpacity: 0.4 }, // Morning
+  { bgFrom: '#e0f2fe', bgTo: '#ffffff', cloudColor: '#d1d5db', cloudOpacity: 0.5 }, // Day
+  { bgFrom: '#fed7aa', bgTo: '#e9d5ff', cloudColor: '#fb923c', cloudOpacity: 0.6 }, // Sunset
+  { bgFrom: '#e9d5ff', bgTo: '#cbd5e1', cloudColor: '#a78bfa', cloudOpacity: 0.5 }, // Dusk
+];
+
 const GAME_WIDTH = 640;
 const GAME_HEIGHT = 300;
 const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12;
-const INITIAL_SPEED = 5.82; // 15% faster than 5.06
+const INITIAL_SPEED = 5.82;
 const WIN_SCORE = 1000;
 const MIN_OBJECT_SPACING = 300;
+const HIGH_SCORE_KEY = 'sprintRunnerHighScore';
+const HAS_PLAYED_KEY = 'sprintRunnerHasPlayed';
 
 // Persistent audio context for mobile compatibility
 let audioContext: AudioContext | null = null;
@@ -48,7 +83,6 @@ const getAudioContext = (): AudioContext | null => {
     if (!audioContext) {
       audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
-    // Resume context if suspended (required for mobile after user interaction)
     if (audioContext.state === 'suspended') {
       audioContext.resume();
     }
@@ -86,12 +120,36 @@ const playMilestoneBeep = () => {
   setTimeout(() => createBeep(1000, 0.15, 0.1), 100);
 };
 
+// New sound effects
+const playCollectSound = () => {
+  // Rising arpeggio C5 → E5 → G5
+  createBeep(523, 0.08, 0.08);  // C5
+  setTimeout(() => createBeep(659, 0.08, 0.08), 60);  // E5
+  setTimeout(() => createBeep(784, 0.12, 0.1), 120);  // G5
+};
+
+const playGameOverSound = () => {
+  // Descending tones
+  createBeep(400, 0.15, 0.1);
+  setTimeout(() => createBeep(300, 0.15, 0.1), 150);
+  setTimeout(() => createBeep(200, 0.2, 0.08), 300);
+};
+
+const playWinSound = () => {
+  // Victory fanfare C5 → E5 → G5 → C6
+  createBeep(523, 0.12, 0.1);  // C5
+  setTimeout(() => createBeep(659, 0.12, 0.1), 100);  // E5
+  setTimeout(() => createBeep(784, 0.12, 0.1), 200);  // G5
+  setTimeout(() => createBeep(1047, 0.3, 0.12), 300); // C6
+};
+
 const Play = () => {
   const gameRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const lastSpeedIncreaseRef = useRef<number>(0);
   const lastMilestoneRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
+  const particleIdRef = useRef(0);
   
   const [isLoading, setIsLoading] = useState(true);
   const [gameState, setGameState] = useState<GameState>("start");
@@ -106,11 +164,32 @@ const Play = () => {
   const [groundSegments, setGroundSegments] = useState<GroundSegment[]>([]);
   const [legPhase, setLegPhase] = useState(0);
   const lastSpawnXRef = useRef<number>(GAME_WIDTH);
+  
+  // New state for enhancements
+  const [level, setLevel] = useState(1);
+  const [highScore, setHighScore] = useState(0);
+  const [isNewHighScore, setIsNewHighScore] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [trailPositions, setTrailPositions] = useState<TrailPosition[]>([]);
+  const [shakeOffset, setShakeOffset] = useState({ x: 0, y: 0 });
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [hasPlayedBefore, setHasPlayedBefore] = useState(true);
+  const [hasJumpedThisGame, setHasJumpedThisGame] = useState(false);
+
+  // Load high score and played status on mount
+  useEffect(() => {
+    const savedHighScore = localStorage.getItem(HIGH_SCORE_KEY);
+    if (savedHighScore) {
+      setHighScore(parseInt(savedHighScore, 10));
+    }
+    const hasPlayed = localStorage.getItem(HAS_PLAYED_KEY);
+    setHasPlayedBefore(hasPlayed === 'true');
+  }, []);
 
   // Initialize loading state
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Initialize audio context on first load
       getAudioContext();
       setIsLoading(false);
     }, 500);
@@ -125,6 +204,7 @@ const Play = () => {
   const scoreRef = useRef(score);
   const gameTimeRef = useRef(gameTime);
   const gameStateRef = useRef(gameState);
+  const levelRef = useRef(level);
 
   // Initialize clouds and ground
   useEffect(() => {
@@ -162,7 +242,74 @@ const Play = () => {
     scoreRef.current = score;
     gameTimeRef.current = gameTime;
     gameStateRef.current = gameState;
-  }, [playerY, velocity, isJumping, objects, speed, score, gameTime, gameState]);
+    levelRef.current = level;
+  }, [playerY, velocity, isJumping, objects, speed, score, gameTime, gameState, level]);
+
+  // Calculate current time theme based on game time
+  const getTimeTheme = useCallback(() => {
+    const phase = Math.min(Math.floor(gameTime / 15000), 3);
+    const nextPhase = Math.min(phase + 1, 3);
+    const progress = (gameTime % 15000) / 15000;
+    
+    const current = TIME_THEMES[phase];
+    const next = TIME_THEMES[nextPhase];
+    
+    // Interpolate between themes
+    return {
+      bgFrom: current.bgFrom,
+      bgTo: current.bgTo,
+      cloudColor: current.cloudColor,
+      cloudOpacity: current.cloudOpacity + (next.cloudOpacity - current.cloudOpacity) * progress
+    };
+  }, [gameTime]);
+
+  // Spawn particles
+  const spawnParticles = useCallback((x: number, y: number, type: 'dust' | 'sparkle', count: number) => {
+    const newParticles: Particle[] = [];
+    const colors = type === 'dust' 
+      ? ['#9ca3af', '#6b7280', '#d1d5db']
+      : ['#EEC7C4', '#E48981', '#fbbf24', '#f59e0b'];
+    
+    for (let i = 0; i < count; i++) {
+      newParticles.push({
+        id: particleIdRef.current++,
+        x,
+        y,
+        vx: (Math.random() - 0.5) * (type === 'dust' ? 2 : 6),
+        vy: type === 'dust' ? -Math.random() * 2 : -Math.random() * 4 - 2,
+        life: type === 'dust' ? 20 : 40,
+        maxLife: type === 'dust' ? 20 : 40,
+        type,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+    setParticles(prev => [...prev, ...newParticles]);
+  }, []);
+
+  // Trigger screen shake
+  const triggerShake = useCallback(() => {
+    const shake = () => {
+      let intensity = 3;
+      let duration = 200;
+      const startTime = Date.now();
+      
+      const shakeFrame = () => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed < duration) {
+          const decay = 1 - elapsed / duration;
+          setShakeOffset({
+            x: (Math.random() - 0.5) * intensity * decay,
+            y: (Math.random() - 0.5) * intensity * decay
+          });
+          requestAnimationFrame(shakeFrame);
+        } else {
+          setShakeOffset({ x: 0, y: 0 });
+        }
+      };
+      shakeFrame();
+    };
+    shake();
+  }, []);
 
   const triggerConfetti = () => {
     const duration = 3000;
@@ -196,6 +343,8 @@ const Play = () => {
       playJumpBeep();
       setVelocity(JUMP_FORCE);
       setIsJumping(true);
+      setHasJumpedThisGame(true);
+      setShowHint(false);
     }
   }, []);
 
@@ -245,6 +394,12 @@ const Play = () => {
     setObjects([]);
     setSpeed(INITIAL_SPEED);
     setGameTime(0);
+    setLevel(1);
+    setIsNewHighScore(false);
+    setParticles([]);
+    setTrailPositions([]);
+    setShowLevelUp(false);
+    setHasJumpedThisGame(false);
     lastSpeedIncreaseRef.current = 0;
     lastSpawnXRef.current = GAME_WIDTH;
     lastMilestoneRef.current = 0;
@@ -253,12 +408,48 @@ const Play = () => {
   const startGame = () => {
     resetGame();
     setGameState("playing");
+    
+    // Show hint for first-time players
+    if (!hasPlayedBefore) {
+      setShowHint(true);
+      localStorage.setItem(HAS_PLAYED_KEY, 'true');
+      setHasPlayedBefore(true);
+      
+      // Auto-hide hint after 3 seconds
+      setTimeout(() => {
+        setShowHint(false);
+      }, 3000);
+    }
   };
+
+  // Handle game over - check and save high score
+  const handleGameOver = useCallback(() => {
+    playGameOverSound();
+    const finalScore = Math.floor(scoreRef.current);
+    if (finalScore > highScore) {
+      setHighScore(finalScore);
+      setIsNewHighScore(true);
+      localStorage.setItem(HIGH_SCORE_KEY, finalScore.toString());
+    }
+    setGameState("gameover");
+  }, [highScore]);
+
+  // Handle win
+  const handleWin = useCallback(() => {
+    playWinSound();
+    triggerConfetti();
+    const finalScore = WIN_SCORE;
+    if (finalScore > highScore) {
+      setHighScore(finalScore);
+      setIsNewHighScore(true);
+      localStorage.setItem(HIGH_SCORE_KEY, finalScore.toString());
+    }
+    setGameState("win");
+  }, [highScore]);
 
   const gameLoop = useCallback((timestamp: number) => {
     if (gameStateRef.current !== "playing") return;
 
-    // Calculate delta time for smooth animation
     const deltaTime = lastTimeRef.current ? (timestamp - lastTimeRef.current) / 16.67 : 1;
     lastTimeRef.current = timestamp;
 
@@ -278,7 +469,6 @@ const Play = () => {
         x: seg.x - speedRef.current * deltaTime
       }));
       
-      // Remove segments that are off screen and add new ones
       const filtered = newSegments.filter(seg => seg.x + seg.width > -50);
       const rightmost = Math.max(...filtered.map(s => s.x + s.width));
       
@@ -293,19 +483,59 @@ const Play = () => {
       return filtered;
     });
 
-    // Update game time
+    // Update game time and check for level up
     setGameTime(prev => {
       const newTime = prev + 16.67 * deltaTime;
       
       if (Math.floor(newTime / 15000) > Math.floor(lastSpeedIncreaseRef.current / 15000)) {
-        setSpeed(s => Math.min(s + 0.44, 12.8)); // 15% faster progression
+        setSpeed(s => Math.min(s + 0.44, 12.8));
         lastSpeedIncreaseRef.current = newTime;
+        
+        // Level up!
+        setLevel(l => {
+          const newLevel = l + 1;
+          setShowLevelUp(true);
+          triggerShake();
+          playMilestoneBeep();
+          setTimeout(() => setShowLevelUp(false), 1500);
+          return newLevel;
+        });
       }
       
       return newTime;
     });
 
-    // Update player physics with deltaTime
+    // Update particles
+    setParticles(prev => prev
+      .map(p => ({
+        ...p,
+        x: p.x + p.vx,
+        y: p.y + p.vy,
+        vy: p.vy + 0.15,
+        life: p.life - 1
+      }))
+      .filter(p => p.life > 0)
+    );
+
+    // Spawn dust particles while on ground
+    if (!isJumpingRef.current && Math.random() < 0.3) {
+      spawnParticles(60 + PLAYER_SIZE / 2, GROUND_Y - 2, 'dust', 1);
+    }
+
+    // Update jump trail
+    if (isJumpingRef.current) {
+      setTrailPositions(prev => {
+        const newTrail = [
+          { x: 60, y: playerYRef.current, opacity: 0.6 },
+          ...prev.slice(0, 3).map(t => ({ ...t, opacity: t.opacity * 0.6 }))
+        ];
+        return newTrail.filter(t => t.opacity > 0.1);
+      });
+    } else {
+      setTrailPositions([]);
+    }
+
+    // Update player physics
     setVelocity(prev => prev + GRAVITY * deltaTime);
     setPlayerY(prev => {
       const newY = prev + velocityRef.current * deltaTime;
@@ -317,7 +547,7 @@ const Play = () => {
       return newY;
     });
 
-    // Update score (distance)
+    // Update score
     setScore(prev => {
       const newScore = prev + 0.1 * deltaTime;
       
@@ -325,18 +555,16 @@ const Play = () => {
       const currentMilestone = Math.floor(newScore / 100);
       if (currentMilestone > lastMilestoneRef.current && newScore < WIN_SCORE) {
         lastMilestoneRef.current = currentMilestone;
-        playMilestoneBeep();
       }
       
       if (newScore >= WIN_SCORE) {
-        setGameState("win");
-        triggerConfetti();
+        handleWin();
         return WIN_SCORE;
       }
       return newScore;
     });
 
-    // Spawn objects with proper spacing
+    // Spawn objects
     const rightmostObject = objectsRef.current.reduce((max, obj) => Math.max(max, obj.x), 0);
     const canSpawn = rightmostObject < GAME_WIDTH - MIN_OBJECT_SPACING;
     
@@ -355,10 +583,12 @@ const Play = () => {
           
           if (checkCollision(player, obj)) {
             if (obj.type === "coffee" || obj.type === "insight") {
-              setScore(s => s + 50); // +50 users per collectible
+              playCollectSound();
+              spawnParticles(obj.x + obj.width / 2, obj.y + obj.height / 2, 'sparkle', 8);
+              setScore(s => s + 50);
               return false;
             } else {
-              setGameState("gameover");
+              handleGameOver();
               return false;
             }
           }
@@ -367,7 +597,7 @@ const Play = () => {
     });
 
     animationRef.current = requestAnimationFrame(gameLoop);
-  }, [spawnObject]);
+  }, [spawnObject, spawnParticles, triggerShake, handleGameOver, handleWin]);
 
   useEffect(() => {
     if (gameState === "playing") {
@@ -384,7 +614,6 @@ const Play = () => {
   // Global click/tap handler for jumping
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
-      // Check if click is on a navigation link or button (except the game area during play)
       const target = e.target as HTMLElement;
       const isNavigationOrButton = target.closest('a') || target.closest('button');
       
@@ -430,13 +659,17 @@ const Play = () => {
     }
   };
 
-  // Running person SVG with animated legs
-  const RunningPerson = () => {
+  // Running person with bobbing animation
+  const RunningPerson = ({ bobOffset = 0, rotation = 0 }: { bobOffset?: number; rotation?: number }) => {
     const legSwing = Math.sin(legPhase) * 25;
     const armSwing = Math.sin(legPhase) * 20;
     
     return (
-      <svg viewBox="0 0 40 40" className="w-full h-full">
+      <svg 
+        viewBox="0 0 40 40" 
+        className="w-full h-full"
+        style={{ transform: `translateY(${bobOffset}px) rotate(${rotation}deg)` }}
+      >
         {/* Head */}
         <circle cx="20" cy="8" r="6" fill="#6b7280" />
         {/* Body */}
@@ -473,6 +706,13 @@ const Play = () => {
     );
   };
 
+  // Calculate player animation values
+  const bobOffset = !isJumping ? Math.sin(legPhase * 2) * 2 : 0;
+  const jumpRotation = isJumping ? (velocity < 0 ? -10 : 5) : 0;
+  
+  // Get current background theme
+  const theme = getTimeTheme();
+
   return (
     <Layout>
       <SEO 
@@ -504,14 +744,28 @@ const Play = () => {
               ref={gameRef}
               role="application"
               aria-label="Sprint Runner game - Press Space or click/tap to jump"
-              className="game-container relative bg-slate-100 border border-slate-300 rounded-2xl overflow-hidden select-none"
+              className="game-container relative border border-slate-300 rounded-2xl overflow-hidden select-none"
               style={{ 
                 width: "100%", 
                 maxWidth: GAME_WIDTH, 
                 height: GAME_HEIGHT,
-                touchAction: "none"
+                touchAction: "none",
+                background: `linear-gradient(to bottom, ${theme.bgFrom}, ${theme.bgTo})`,
+                transition: 'background 2s ease',
+                transform: `translate(${shakeOffset.x}px, ${shakeOffset.y}px)`
               }}
             >
+              {/* Level-up edge flash */}
+              {showLevelUp && (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-20"
+                  style={{
+                    boxShadow: 'inset 0 0 30px 10px rgba(228, 137, 129, 0.5)',
+                    animation: 'pulse 0.3s ease-out'
+                  }}
+                />
+              )}
+
               {/* Loading State */}
               {isLoading && (
                 <div className="absolute inset-0 bg-background flex flex-col items-center justify-center z-20">
@@ -519,30 +773,90 @@ const Play = () => {
                   <p className="text-muted-foreground text-sm">Loading game...</p>
                 </div>
               )}
-              {/* Clouds */}
+
+              {/* Clouds with dynamic theming */}
               {clouds.map((cloud, index) => (
                 <div
                   key={`cloud-${index}`}
-                  className="absolute opacity-40"
+                  className="absolute transition-opacity duration-1000"
                   style={{
                     left: cloud.x,
                     top: cloud.y,
                     width: cloud.size,
                     height: cloud.size * 0.6,
+                    opacity: theme.cloudOpacity
                   }}
                 >
                   <svg viewBox="0 0 100 60" className="w-full h-full">
-                    <ellipse cx="30" cy="40" rx="25" ry="18" fill="#9ca3af" />
-                    <ellipse cx="55" cy="35" rx="30" ry="22" fill="#9ca3af" />
-                    <ellipse cx="75" cy="42" rx="20" ry="15" fill="#9ca3af" />
+                    <ellipse cx="30" cy="40" rx="25" ry="18" fill={theme.cloudColor} />
+                    <ellipse cx="55" cy="35" rx="30" ry="22" fill={theme.cloudColor} />
+                    <ellipse cx="75" cy="42" rx="20" ry="15" fill={theme.cloudColor} />
                   </svg>
                 </div>
               ))}
 
-              {/* Score */}
-              <div className="absolute top-4 right-4 text-sm font-medium text-slate-600">
-                Users Acquired: <span className="text-slate-800 font-bold">{Math.floor(score)}</span>
+              {/* Level indicator */}
+              {gameState === "playing" && (
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
+                    showLevelUp ? 'bg-coral text-white scale-110' : 'bg-slate-200 text-slate-600'
+                  }`}>
+                    <Zap className="w-3 h-3" />
+                    Sprint {level}
+                  </div>
+                </div>
+              )}
+
+              {/* Score and High Score */}
+              <div className="absolute top-4 right-4 text-sm font-medium text-slate-600 text-right">
+                <div>
+                  Users: <span className="text-slate-800 font-bold">{Math.floor(score)}</span>
+                </div>
+                {highScore > 0 && (
+                  <div className="text-xs text-slate-500">
+                    Best: {highScore}
+                  </div>
+                )}
               </div>
+
+              {/* Tutorial hint */}
+              {showHint && !hasJumpedThisGame && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute z-30 flex items-center gap-2"
+                  style={{ left: 60, top: playerY - 50 }}
+                >
+                  <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg text-sm font-medium text-slate-700">
+                    Tap or Space to Jump!
+                  </div>
+                  <motion.div
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="text-coral"
+                  >
+                    ↓
+                  </motion.div>
+                </motion.div>
+              )}
+
+              {/* Particles */}
+              {particles.map(particle => (
+                <div
+                  key={particle.id}
+                  className="absolute rounded-full pointer-events-none"
+                  style={{
+                    left: particle.x,
+                    top: particle.y,
+                    width: particle.type === 'dust' ? 3 : 6,
+                    height: particle.type === 'dust' ? 3 : 6,
+                    backgroundColor: particle.color,
+                    opacity: particle.life / particle.maxLife,
+                    transform: particle.type === 'sparkle' ? 'rotate(45deg)' : undefined
+                  }}
+                />
+              ))}
 
               {/* Ground with uneven terrain */}
               <div className="absolute left-0 right-0" style={{ top: GROUND_Y }}>
@@ -559,9 +873,25 @@ const Play = () => {
                     }}
                   />
                 ))}
-                {/* Base ground line */}
                 <div className="absolute left-0 right-0 h-0.5 bg-slate-400" />
               </div>
+
+              {/* Jump trail */}
+              {trailPositions.map((trail, index) => (
+                <div
+                  key={`trail-${index}`}
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: trail.x - index * 8,
+                    top: trail.y,
+                    width: PLAYER_SIZE,
+                    height: PLAYER_SIZE,
+                    opacity: trail.opacity * 0.3
+                  }}
+                >
+                  <RunningPerson bobOffset={0} rotation={jumpRotation} />
+                </div>
+              ))}
 
               {/* Player - Running Person */}
               <div
@@ -575,7 +905,7 @@ const Play = () => {
                   transform: 'translateZ(0)'
                 }}
               >
-                <RunningPerson />
+                <RunningPerson bobOffset={bobOffset} rotation={jumpRotation} />
               </div>
 
               {/* Objects */}
@@ -600,7 +930,10 @@ const Play = () => {
               {gameState === "start" && !isLoading && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">Ready for the Sprint?</h2>
-                  <p className="text-muted-foreground text-sm mb-6">Acquire 1,000 users to achieve product-market fit!</p>
+                  <p className="text-muted-foreground text-sm mb-2">Acquire 1,000 users to achieve product-market fit!</p>
+                  {highScore > 0 && (
+                    <p className="text-xs text-muted-foreground mb-4">Your best: {highScore} users</p>
+                  )}
                   <Button onClick={startGame} className="bg-primary hover:bg-primary/90" aria-label="Start the game">
                     Start Game
                   </Button>
@@ -612,9 +945,18 @@ const Play = () => {
               {gameState === "gameover" && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2 text-primary">Sprint Failed!</h2>
-                  <p className="text-muted-foreground text-sm mb-2">
+                  <p className="text-muted-foreground text-sm mb-1">
                     You acquired <span className="font-bold text-foreground">{Math.floor(score)}</span> users
                   </p>
+                  {isNewHighScore && (
+                    <motion.p
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-coral font-bold text-sm mb-2"
+                    >
+                      🎉 New Best!
+                    </motion.p>
+                  )}
                   <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">
                     Product Management is hard. Hiring Dale makes it easier.
                   </p>
@@ -633,6 +975,15 @@ const Play = () => {
               {gameState === "win" && (
                 <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
                   <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">🚀 Product-Market Fit Achieved!</h2>
+                  {isNewHighScore && (
+                    <motion.p
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-coral font-bold text-sm mb-2"
+                    >
+                      🎉 New Best!
+                    </motion.p>
+                  )}
                   <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">
                     You clearly know how to navigate a product launch. So do I.
                   </p>
