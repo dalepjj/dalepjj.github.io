@@ -68,9 +68,9 @@ const GROUND_Y = GAME_HEIGHT - 60;
 const PLAYER_SIZE = 40;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -12;
-const INITIAL_SPEED = 5.82;
+const INITIAL_SPEED = 6.2;
 const WIN_SCORE = 1000;
-const MIN_OBJECT_SPACING = 300;
+const MIN_OBJECT_SPACING = 240;
 const HIGH_SCORE_KEY = 'sprintRunnerHighScore';
 const HAS_PLAYED_KEY = 'sprintRunnerHasPlayed';
 
@@ -369,7 +369,7 @@ const Play = () => {
     let type: GameObject["type"];
     let y: number;
     
-    if (rand < 0.25) {
+    if (rand < 0.20) {
       // Collectible: lightbulb (user insight)
       type = "insight";
       y = GROUND_Y - PLAYER_SIZE - 50 - Math.random() * 40;
@@ -583,7 +583,7 @@ const Play = () => {
     const rightmostObject = objectsRef.current.reduce((max, obj) => Math.max(max, obj.x), 0);
     const canSpawn = rightmostObject < GAME_WIDTH - MIN_OBJECT_SPACING;
     
-    if (canSpawn && Math.random() < 0.015) {
+    if (canSpawn && Math.random() < 0.02) {
       setObjects(prev => [...prev, spawnObject()]);
     }
 
