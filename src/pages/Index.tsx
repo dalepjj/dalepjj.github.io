@@ -1,11 +1,17 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import CircleButton from "@/components/CircleButton";
+import SEO from "@/components/SEO";
 import profilePhoto from "@/assets/profile-photo.jpg";
 
 const Index = () => {
   return (
     <Layout>
+      <SEO 
+        title="Dale Jacobs - Product Leader & Design Thinker"
+        description="SaaS Product Leader with 18+ years of experience building and scaling B2B platforms. Skilled in driving growth, defining product strategy, and leading high-performing teams."
+        path="/"
+      />
       <div className="content-container min-h-[calc(100vh-200px)] flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-12">
           {/* Profile Image */}

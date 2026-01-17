@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Mail, Linkedin, MapPin } from "lucide-react";
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 
 interface ContactCardProps {
   icon: React.ReactNode;
@@ -39,6 +40,11 @@ const BlueskyIcon = ({ className }: { className?: string }) => (
 const Contact = () => {
   return (
     <Layout>
+      <SEO 
+        title="Contact"
+        description="Get in touch with Dale Jacobs. Let's discuss product strategy, leadership opportunities, or how to build great SaaS products."
+        path="/contact"
+      />
       <div className="content-container py-12">
         <div className="max-w-2xl mx-auto">
           <motion.div
