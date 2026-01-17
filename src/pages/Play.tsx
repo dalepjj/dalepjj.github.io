@@ -1146,7 +1146,7 @@ const Play = () => {
                     <ellipse cx="15" cy="12" rx="2" ry="3" fill="white" opacity="0.5" />
                   </svg>
                 </span>
-                User Insights = +50 Users
+                User Insights = 50 Users
               </p>
               <p className="flex items-center justify-center gap-1">
                 Avoid
@@ -1165,7 +1165,7 @@ const Play = () => {
                     <circle cx="30" cy="0" r="1.5" fill="#b91c1c" />
                   </svg>
                 </span>
-                Bugs &
+                Bugs and
                 <span className="inline-block w-5 h-5 mx-1">
                   <svg viewBox="0 0 40 40" className="w-full h-full">
                     <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
