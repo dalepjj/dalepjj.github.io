@@ -1055,16 +1055,11 @@ const Play = () => {
 
               {/* Start Screen */}
               {gameState === "start" && !isLoading && (
-                <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-                  <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">Ready for the Sprint?</h2>
-                  <p className="text-muted-foreground text-sm mb-2">Acquire 1,000 users to achieve product-market fit!</p>
-                  {highScore > 0 && (
-                    <p className="text-xs text-muted-foreground mb-4">Your best: {highScore} users</p>
-                  )}
-                  <Button onClick={startGame} className="bg-primary hover:bg-primary/90" aria-label="Start the game">
+                <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10 gap-4">
+                  <Button onClick={startGame} className="bg-primary hover:bg-primary/90 px-8 py-3 text-lg" aria-label="Start the game">
                     Start Game
                   </Button>
-                  <p className="text-xs text-muted-foreground mt-4">Press Space or Tap to Jump</p>
+                  <p className="text-xs text-muted-foreground">Press Space or Tap to Jump</p>
                 </div>
               )}
 
