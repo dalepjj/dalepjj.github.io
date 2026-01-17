@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 
 const Header = () => {
   const location = useLocation();
+  const isHome = location.pathname === "/";
   
   const navItems = [
     { name: "Resume", path: "/resume" },
@@ -23,8 +24,15 @@ const Header = () => {
           to="/" 
           className="flex items-center gap-3 group"
           aria-label="Dale Jacobs - Home"
+          aria-current={isHome ? "page" : undefined}
         >
-          <span className="w-3 h-3 rounded-full bg-coral group-hover:scale-110 transition-transform duration-200" />
+          <span 
+            className={`w-3 h-3 rounded-full transition-all duration-200 group-hover:scale-110 ${
+              isHome 
+                ? "bg-coral" 
+                : "border-2 border-coral bg-transparent group-hover:bg-coral/20"
+            }`} 
+          />
           <span className="font-serif text-lg tracking-tight">Dale Jacobs</span>
         </Link>
         
