@@ -856,7 +856,7 @@ const Play = () => {
           >
             <h1 className="section-title mb-4">Sprint Runner</h1>
             <p className="body-text max-w-xl mx-auto">
-              Navigate the chaos of product development.
+              Navigate the chaos of product development and acquire 1,000 users to achieve product-market fit.
             </p>
           </motion.div>
 
@@ -932,17 +932,19 @@ const Play = () => {
                 </div>
               )}
 
-              {/* Score and High Score */}
-              <div className="absolute top-4 right-4 text-sm font-medium text-slate-600 text-right">
-                <div>
-                  Users: <span className="text-slate-800 font-bold">{Math.floor(score)}</span>
-                </div>
-                {highScore > 0 && (
-                  <div className="text-xs text-slate-500">
-                    Best: {highScore}
+              {/* Score and High Score - hidden on start screen */}
+              {gameState !== "start" && (
+                <div className="absolute top-4 right-4 text-sm font-medium text-slate-600 text-right">
+                  <div>
+                    Users: <span className="text-slate-800 font-bold">{Math.floor(score)}</span>
                   </div>
-                )}
-              </div>
+                  {highScore > 0 && (
+                    <div className="text-xs text-slate-500">
+                      Best: {highScore}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Tutorial hint */}
               {showHint && !hasJumpedThisGame && (
@@ -1125,67 +1127,70 @@ const Play = () => {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-center mt-6 text-xs text-muted-foreground"
-          >
-            <p className="mb-3 flex items-center justify-center gap-1">
-              <span className="inline-block w-5 h-5">
-                <svg viewBox="0 0 40 40" className="w-full h-full">
-                  <line x1="20" y1="0" x2="20" y2="4" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-                  <line x1="6" y1="12" x2="10" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-                  <line x1="34" y1="12" x2="30" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
-                  <ellipse cx="20" cy="16" rx="11" ry="12" fill="#fef3c7" />
-                  <ellipse cx="20" cy="14" rx="7" ry="8" fill="#fde68a" opacity="0.7" />
-                  <path d="M16 18 Q18 12 20 18 Q22 12 24 18" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
-                  <rect x="14" y="27" width="12" height="3" rx="1" fill="#9ca3af" />
-                  <rect x="15" y="30" width="10" height="2" rx="0.5" fill="#6b7280" />
-                  <rect x="16" y="32" width="8" height="2" rx="0.5" fill="#9ca3af" />
-                  <rect x="17" y="34" width="6" height="2" rx="1" fill="#6b7280" />
-                  <ellipse cx="15" cy="12" rx="2" ry="3" fill="white" opacity="0.5" />
-                </svg>
-              </span>
-              User Insights = +50 Users
-            </p>
-            <p className="flex items-center justify-center gap-1">
-              Avoid
-              <span className="inline-block w-5 h-5 mx-1">
-                <svg viewBox="0 0 40 40" className="w-full h-full">
-                  <ellipse cx="20" cy="28" rx="10" ry="8" fill="#7f1d1d" />
-                  <ellipse cx="20" cy="18" rx="8" ry="7" fill="#991b1b" />
-                  <ellipse cx="20" cy="10" rx="6" ry="5" fill="#b91c1c" />
-                  <circle cx="15" cy="8" r="4" fill="white" />
-                  <circle cx="25" cy="8" r="4" fill="white" />
-                  <circle cx="16" cy="9" r="2" fill="#1f2937" />
-                  <circle cx="26" cy="9" r="2" fill="#1f2937" />
-                  <line x1="14" y1="4" x2="10" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
-                  <line x1="26" y1="4" x2="30" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
-                  <circle cx="10" cy="0" r="1.5" fill="#b91c1c" />
-                  <circle cx="30" cy="0" r="1.5" fill="#b91c1c" />
-                </svg>
-              </span>
-              Bugs &
-              <span className="inline-block w-5 h-5 mx-1">
-                <svg viewBox="0 0 40 40" className="w-full h-full">
-                  <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
-                  <circle cx="20" cy="14" r="10" fill="#6b7280" />
-                  <ellipse cx="20" cy="18" rx="6" ry="4" fill="#9ca3af" />
-                  <circle cx="17" cy="17" r="1.5" fill="#4b5563" />
-                  <circle cx="23" cy="17" r="1.5" fill="#4b5563" />
-                  <circle cx="14" cy="11" r="2" fill="white" />
-                  <circle cx="26" cy="11" r="2" fill="white" />
-                  <circle cx="14" cy="11" r="1" fill="#1f2937" />
-                  <circle cx="26" cy="11" r="1" fill="#1f2937" />
-                  <ellipse cx="10" cy="6" rx="3" ry="2" fill="#6b7280" />
-                  <ellipse cx="30" cy="6" rx="3" ry="2" fill="#6b7280" />
-                  <polygon points="20,26 17,30 20,40 23,30" fill="#EF4444" />
-                </svg>
-              </span>
-              HiPPOs
-            </p>
-          </motion.div>
+          {/* Legend - shown after first game or for returning players */}
+          {(hasPlayedBefore || gameState !== "start") && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-center mt-6 text-xs text-muted-foreground"
+            >
+              <p className="mb-3 flex items-center justify-center gap-1">
+                <span className="inline-block w-5 h-5">
+                  <svg viewBox="0 0 40 40" className="w-full h-full">
+                    <line x1="20" y1="0" x2="20" y2="4" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                    <line x1="6" y1="12" x2="10" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                    <line x1="34" y1="12" x2="30" y2="14" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+                    <ellipse cx="20" cy="16" rx="11" ry="12" fill="#fef3c7" />
+                    <ellipse cx="20" cy="14" rx="7" ry="8" fill="#fde68a" opacity="0.7" />
+                    <path d="M16 18 Q18 12 20 18 Q22 12 24 18" stroke="#f59e0b" strokeWidth="1.5" fill="none" />
+                    <rect x="14" y="27" width="12" height="3" rx="1" fill="#9ca3af" />
+                    <rect x="15" y="30" width="10" height="2" rx="0.5" fill="#6b7280" />
+                    <rect x="16" y="32" width="8" height="2" rx="0.5" fill="#9ca3af" />
+                    <rect x="17" y="34" width="6" height="2" rx="1" fill="#6b7280" />
+                    <ellipse cx="15" cy="12" rx="2" ry="3" fill="white" opacity="0.5" />
+                  </svg>
+                </span>
+                User Insights = +50 Users
+              </p>
+              <p className="flex items-center justify-center gap-1">
+                Avoid
+                <span className="inline-block w-5 h-5 mx-1">
+                  <svg viewBox="0 0 40 40" className="w-full h-full">
+                    <ellipse cx="20" cy="28" rx="10" ry="8" fill="#7f1d1d" />
+                    <ellipse cx="20" cy="18" rx="8" ry="7" fill="#991b1b" />
+                    <ellipse cx="20" cy="10" rx="6" ry="5" fill="#b91c1c" />
+                    <circle cx="15" cy="8" r="4" fill="white" />
+                    <circle cx="25" cy="8" r="4" fill="white" />
+                    <circle cx="16" cy="9" r="2" fill="#1f2937" />
+                    <circle cx="26" cy="9" r="2" fill="#1f2937" />
+                    <line x1="14" y1="4" x2="10" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="26" y1="4" x2="30" y2="0" stroke="#7f1d1d" strokeWidth="1.5" strokeLinecap="round" />
+                    <circle cx="10" cy="0" r="1.5" fill="#b91c1c" />
+                    <circle cx="30" cy="0" r="1.5" fill="#b91c1c" />
+                  </svg>
+                </span>
+                Bugs &
+                <span className="inline-block w-5 h-5 mx-1">
+                  <svg viewBox="0 0 40 40" className="w-full h-full">
+                    <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
+                    <circle cx="20" cy="14" r="10" fill="#6b7280" />
+                    <ellipse cx="20" cy="18" rx="6" ry="4" fill="#9ca3af" />
+                    <circle cx="17" cy="17" r="1.5" fill="#4b5563" />
+                    <circle cx="23" cy="17" r="1.5" fill="#4b5563" />
+                    <circle cx="14" cy="11" r="2" fill="white" />
+                    <circle cx="26" cy="11" r="2" fill="white" />
+                    <circle cx="14" cy="11" r="1" fill="#1f2937" />
+                    <circle cx="26" cy="11" r="1" fill="#1f2937" />
+                    <ellipse cx="10" cy="6" rx="3" ry="2" fill="#6b7280" />
+                    <ellipse cx="30" cy="6" rx="3" ry="2" fill="#6b7280" />
+                    <polygon points="20,26 17,30 20,40 23,30" fill="#EF4444" />
+                  </svg>
+                </span>
+                HiPPOs
+              </p>
+            </motion.div>
+          )}
         </div>
       </div>
     </Layout>
