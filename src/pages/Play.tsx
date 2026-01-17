@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useAnimationFrame } from "framer-motion";
-import { Bug, Bomb, ShieldOff, Sparkles, Lightbulb, Zap } from "lucide-react";
+import { Bug, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
@@ -14,7 +14,7 @@ interface GameObject {
   y: number;
   width: number;
   height: number;
-  type: "bug" | "scope" | "blocker" | "coffee" | "insight";
+  type: "bug" | "hippo" | "insight";
 }
 
 interface Cloud {
@@ -354,13 +354,12 @@ const Play = () => {
     let y: number;
     
     if (rand < 0.25) {
-      type = rand < 0.125 ? "coffee" : "insight";
+      // Collectible: lightbulb (user insight)
+      type = "insight";
       y = GROUND_Y - PLAYER_SIZE - 50 - Math.random() * 40;
     } else {
-      const obstacleRand = Math.random();
-      if (obstacleRand < 0.33) type = "bug";
-      else if (obstacleRand < 0.66) type = "scope";
-      else type = "blocker";
+      // Obstacles: 50% bug, 50% hippo
+      type = Math.random() < 0.5 ? "bug" : "hippo";
       y = GROUND_Y - 30;
     }
 
@@ -582,7 +581,7 @@ const Play = () => {
           if (obj.x < -50) return false;
           
           if (checkCollision(player, obj)) {
-            if (obj.type === "coffee" || obj.type === "insight") {
+            if (obj.type === "insight") {
               playCollectSound();
               spawnParticles(obj.x + obj.width / 2, obj.y + obj.height / 2, 'sparkle', 8);
               setScore(s => s + 50);
@@ -643,21 +642,70 @@ const Play = () => {
     };
   }, [gameState, jump]);
 
+  // HiPPO (Highest Paid Person's Opinion) custom icon
+  const HippoIcon = () => (
+    <svg viewBox="0 0 40 40" className="w-full h-full" style={{ animation: 'hippo-bob 0.5s ease-in-out infinite' }}>
+      {/* Body - round hippo shape */}
+      <ellipse cx="20" cy="26" rx="14" ry="10" fill="#6b7280" />
+      {/* Head */}
+      <circle cx="20" cy="14" r="10" fill="#6b7280" />
+      {/* Snout */}
+      <ellipse cx="20" cy="18" rx="6" ry="4" fill="#9ca3af" />
+      {/* Nostrils */}
+      <circle cx="17" cy="17" r="1.5" fill="#4b5563" />
+      <circle cx="23" cy="17" r="1.5" fill="#4b5563" />
+      {/* Eyes */}
+      <circle cx="14" cy="11" r="2" fill="white" />
+      <circle cx="26" cy="11" r="2" fill="white" />
+      <circle cx="14" cy="11" r="1" fill="#1f2937" />
+      <circle cx="26" cy="11" r="1" fill="#1f2937" />
+      {/* Ears */}
+      <ellipse cx="10" cy="6" rx="3" ry="2" fill="#6b7280" />
+      <ellipse cx="30" cy="6" rx="3" ry="2" fill="#6b7280" />
+      {/* Tie (the executive touch) */}
+      <polygon points="20,26 17,30 20,40 23,30" fill="#EF4444" />
+    </svg>
+  );
+
   const renderIcon = (type: GameObject["type"]) => {
-    const iconClass = "w-full h-full";
     switch (type) {
       case "bug":
-        return <Bug className={`${iconClass} text-slate-500`} />;
-      case "scope":
-        return <Bomb className={`${iconClass} text-slate-500`} />;
-      case "blocker":
-        return <ShieldOff className={`${iconClass} text-slate-500`} />;
-      case "coffee":
-        return <Sparkles className={`${iconClass} text-slate-500`} />;
+        return (
+          <Bug 
+            className="w-full h-full text-red-800" 
+            style={{ animation: 'wiggle 0.3s ease-in-out infinite' }}
+          />
+        );
+      case "hippo":
+        return <HippoIcon />;
       case "insight":
-        return <Lightbulb className={`${iconClass} text-slate-500`} />;
+        return (
+          <Lightbulb 
+            className="w-full h-full text-amber-400"
+            style={{ 
+              filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.7))',
+              animation: 'glow-pulse 1.5s ease-in-out infinite'
+            }}
+          />
+        );
     }
   };
+
+  // CSS keyframes injected as style tag
+  const gameStyles = `
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+    @keyframes hippo-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5)); }
+      50% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.9)); }
+    }
+  `;
 
   // Running person with bobbing animation
   const RunningPerson = ({ bobOffset = 0, rotation = 0 }: { bobOffset?: number; rotation?: number }) => {
@@ -715,6 +763,7 @@ const Play = () => {
 
   return (
     <Layout>
+      <style>{gameStyles}</style>
       <SEO 
         title="Sprint Runner"
         description="A fun side-scrolling game about navigating the chaos of product development. Jump over bugs, scope creep, and blockers to achieve product-market fit!"
@@ -801,8 +850,7 @@ const Play = () => {
                   <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all duration-300 ${
                     showLevelUp ? 'bg-coral text-white scale-110' : 'bg-slate-200 text-slate-600'
                   }`}>
-                    <Zap className="w-3 h-3" />
-                    Sprint {level}
+                    ⚡ Sprint {level}
                   </div>
                 </div>
               )}
@@ -1007,13 +1055,11 @@ const Play = () => {
             className="text-center mt-6 text-xs text-muted-foreground"
           >
             <p className="mb-3">
-              <Sparkles className="inline w-4 h-4 mr-1" /> Automation & 
-              <Lightbulb className="inline w-4 h-4 mx-1" /> Insights = +50 Users
+              <Lightbulb className="inline w-4 h-4 mr-1 text-amber-500" /> User Insights = +50 Users
             </p>
             <p>
-              Avoid <Bug className="inline w-4 h-4 mx-1" /> Bugs, 
-              <Bomb className="inline w-4 h-4 mx-1" /> Scope Creep & 
-              <ShieldOff className="inline w-4 h-4 mx-1" /> Blockers
+              Avoid <Bug className="inline w-4 h-4 mx-1 text-red-800" /> Bugs &
+              <span className="inline-block mx-1">🦛</span> HiPPOs
             </p>
           </motion.div>
         </div>
