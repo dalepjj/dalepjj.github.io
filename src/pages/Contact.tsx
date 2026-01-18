@@ -32,8 +32,8 @@ const ContactCard = ({ icon, title, value, href, delay = 0 }: ContactCardProps) 
 );
 
 const BlueskyIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 11.4c-.9-1.8-3.4-5-5.6-6.6-1.6-1.2-2.9-.8-3.3-.6-.5.2-.6.9-.6 1.4 0 .4.3 4.4.5 5.2.6 2.1 2.8 2.8 4.9 2.6M12 11.4c.9-1.8 3.4-5 5.6-6.6 1.6-1.2 2.9-.8 3.3-.6.5.2.6.9.6 1.4 0 .4-.3 4.4-.5 5.2-.6 2.1-2.8 2.8-4.9 2.6M12 11.4c-.8 2.6-1.6 7.2 1.8 9.2 2.8 1.6 4.4-.4 5.2-1.6M12 11.4c.8 2.6 1.6 7.2-1.8 9.2-2.8 1.6-4.4-.4-5.2-1.6" />
+  <svg className={className} viewBox="0 0 24 21" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5.21 1.42c2.76 2.07 5.72 6.3 6.79 8.55 1.07-2.25 4.03-6.48 6.79-8.55C20.79-.07 24-1.23 24 2.45c0 .73-.42 5.43-.7 6.31-1.02 3.07-3.93 3.85-6.77 3.38 5.13.83 6.46 3.57 3.79 6.31-5.07 5.21-7.13.69-7.83-1.46-.12-.38-.2-.58-.2-.2 0-.38-.08-.18-.2.2-.7 2.15-2.76 6.67-7.83 1.46-2.67-2.74-1.34-5.48 3.79-6.31-2.84.47-5.75-.31-6.77-3.38C.42 7.88 0 3.18 0 2.45 0-1.23 3.21-.07 5.21 1.42Z" />
   </svg>
 );
 
