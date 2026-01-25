@@ -15,7 +15,7 @@ const ExperienceItem = ({ period, title, company, description, delay = 0 }: Expe
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
-    className="border-l-2 border-coral pl-6 py-4"
+    className="border-l-2 border-coral pl-6 py-4 -ml-px rounded-r-lg transition-all duration-200 hover:bg-coral-light/30 hover:border-coral-hover cursor-default"
   >
     <p className="text-sm text-muted-foreground mb-2">{period}</p>
     <h3 className="font-serif text-xl font-medium leading-tight">

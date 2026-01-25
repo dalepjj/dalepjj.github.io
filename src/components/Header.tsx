@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Menu, Gamepad2 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Header = () => {
@@ -24,133 +25,167 @@ const Header = () => {
     { name: "Play", path: "/play" },
   ];
 
-  return (
-    <motion.header 
-      initial={isMobile ? false : { opacity: 0, y: -10 }}
-      animate={isMobile ? false : { opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm"
-    >
-      <div className="content-container py-6 flex items-center justify-between">
-        <Link 
-          to="/" 
-          className="flex items-center gap-2 group"
-          aria-label="Dale Jacobs - Home"
-          aria-current={isHome ? "page" : undefined}
-        >
-          <span 
-            className={`w-3 h-3 rounded-full transition-all duration-200 group-hover:scale-110 ${
-              isHome 
-                ? "bg-coral" 
-                : "border-2 border-coral bg-transparent group-hover:bg-coral/20"
-            }`} 
-          />
-          <span className="font-serif text-lg tracking-tight whitespace-nowrap">Dale Jacobs</span>
-        </Link>
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
-          {navItems.map((item, index) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <div key={item.name} className="flex items-center gap-6">
-                <Link
-                  to={item.path}
-                  className={`nav-link relative ${isActive ? "text-foreground font-medium" : ""}`}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {item.name}
-                  {isActive && (
-                    <motion.span
-                      layoutId="nav-underline"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-coral rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </Link>
-                {index < navItems.length - 1 && <span className="nav-divider" />}
-              </div>
-            );
-          })}
-          
-          {/* Play link - separated as secondary navigation */}
-          <div className="flex items-center gap-6">
-            <span className="nav-divider" />
-            <Link
-              to="/play"
-              className={`nav-link relative flex items-center ${
-                location.pathname === "/play" 
-                  ? "text-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-              aria-current={location.pathname === "/play" ? "page" : undefined}
-              aria-label="Play Sprint Runner"
-            >
-              <Gamepad2 className="w-5 h-5" />
-              {location.pathname === "/play" && (
-                <motion.span
-                  layoutId="nav-underline"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-coral rounded-full"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-            </Link>
-          </div>
-        </nav>
+  const mobileItemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.3,
+        ease: "easeOut" as const,
+      },
+    }),
+  };
 
-        {/* Mobile Navigation */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <button 
-              className="p-2 -mr-2 text-foreground/80 hover:text-foreground transition-colors"
-              aria-label="Open menu"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[280px] pt-16 pl-10">
-            <nav className="flex flex-col gap-6" aria-label="Mobile navigation">
-              {mobileNavItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                const isHomeLink = item.path === "/";
-                const isPlayLink = item.path === "/play";
-                return (
-                  <Fragment key={item.name}>
-                    {isPlayLink && (
-                      <div className="border-t border-border my-2" />
+  return (
+    <TooltipProvider>
+      <motion.header 
+        initial={isMobile ? false : { opacity: 0, y: -10 }}
+        animate={isMobile ? false : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm"
+      >
+        <div className="content-container py-6 flex items-center justify-between">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 group"
+            aria-label="Dale Jacobs - Home"
+            aria-current={isHome ? "page" : undefined}
+          >
+            <span 
+              className={`w-3 h-3 rounded-full transition-all duration-200 group-hover:scale-110 ${
+                isHome 
+                  ? "bg-coral" 
+                  : "border-2 border-coral bg-transparent group-hover:bg-coral/20"
+              }`} 
+            />
+            <span className="font-serif text-lg tracking-tight whitespace-nowrap">Dale Jacobs</span>
+          </Link>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+            {navItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <div key={item.name} className="flex items-center gap-6">
+                  <Link
+                    to={item.path}
+                    className={`nav-link relative ${isActive ? "text-foreground font-medium" : ""}`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {item.name}
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-underline"
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-coral rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
                     )}
-                    <Link
-                      to={item.path}
-                      onClick={() => setIsOpen(false)}
-                      className={`text-lg flex items-center gap-3 transition-colors relative ${
-                        isHomeLink 
-                          ? "font-serif text-foreground" 
-                          : isPlayLink
-                            ? "text-muted-foreground hover:text-foreground"
-                            : isActive
-                              ? "text-foreground" 
-                              : "text-muted-foreground hover:text-foreground"
-                      }`}
-                      aria-current={isActive ? "page" : undefined}
-                    >
-                      {isHomeLink && (
-                        <span 
-                          className={`absolute -left-5 w-2 h-2 rounded-full transition-all ${
-                            isActive ? "bg-coral" : "border-2 border-coral bg-transparent"
-                          }`} 
+                  </Link>
+                  {index < navItems.length - 1 && <span className="nav-divider" />}
+                </div>
+              );
+            })}
+            
+            {/* Play link - separated as secondary navigation */}
+            <div className="flex items-center gap-6">
+              <span className="nav-divider" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to="/play"
+                    className={`nav-link relative flex items-center group ${
+                      location.pathname === "/play" 
+                        ? "text-foreground" 
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    aria-current={location.pathname === "/play" ? "page" : undefined}
+                    aria-label="Play Sprint Runner"
+                  >
+                    <Gamepad2 className="w-5 h-5 group-hover:animate-wiggle" />
+                    {location.pathname === "/play" && (
+                      <motion.span
+                        layoutId="nav-underline"
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-coral rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sprint Runner</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </nav>
+
+          {/* Mobile Navigation */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <button 
+                className="p-2 -mr-2 text-foreground/80 hover:text-foreground transition-colors"
+                aria-label="Open menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] pt-16 pl-10">
+              <nav className="flex flex-col gap-6" aria-label="Mobile navigation">
+                {mobileNavItems.map((item, index) => {
+                  const isActive = location.pathname === item.path;
+                  const isHomeLink = item.path === "/";
+                  const isPlayLink = item.path === "/play";
+                  return (
+                    <Fragment key={item.name}>
+                      {isPlayLink && (
+                        <motion.div 
+                          className="border-t border-border my-2"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: index * 0.05 }}
                         />
                       )}
-                      {item.name}
-                      {isPlayLink && <Gamepad2 className="w-5 h-5 ml-1" />}
-                    </Link>
-                  </Fragment>
-                );
-              })}
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </motion.header>
+                      <motion.div
+                        custom={index}
+                        initial="hidden"
+                        animate={isOpen ? "visible" : "hidden"}
+                        variants={mobileItemVariants}
+                      >
+                        <Link
+                          to={item.path}
+                          onClick={() => setIsOpen(false)}
+                          className={`text-lg flex items-center gap-3 transition-colors relative ${
+                            isHomeLink 
+                              ? "font-serif text-foreground" 
+                              : isPlayLink
+                                ? "text-muted-foreground hover:text-foreground"
+                                : isActive
+                                  ? "text-foreground" 
+                                  : "text-muted-foreground hover:text-foreground"
+                          }`}
+                          aria-current={isActive ? "page" : undefined}
+                        >
+                          {isHomeLink && (
+                            <span 
+                              className={`absolute -left-5 w-2 h-2 rounded-full transition-all ${
+                                isActive ? "bg-coral" : "border-2 border-coral bg-transparent"
+                              }`} 
+                            />
+                          )}
+                          {item.name}
+                          {isPlayLink && <Gamepad2 className="w-5 h-5 ml-1" />}
+                        </Link>
+                      </motion.div>
+                    </Fragment>
+                  );
+                })}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </motion.header>
+    </TooltipProvider>
   );
 };
 

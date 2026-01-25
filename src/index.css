@@ -170,4 +170,19 @@
   .game-container *:focus-visible {
     @apply ring-0 ring-offset-0;
   }
+
+  /* Wiggle animation for gamepad icon */
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+
+  .animate-wiggle {
+    animation: wiggle 0.4s ease-in-out;
+  }
+
+  .group:hover .group-hover\:animate-wiggle {
+    animation: wiggle 0.4s ease-in-out;
+  }
 }
