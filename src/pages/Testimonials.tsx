@@ -44,7 +44,7 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
       />
       <div>
         <h3 className="font-serif text-lg font-medium">{testimonial.name}</h3>
-        <p className="text-sm text-coral">{testimonial.title}</p>
+        <p className="text-sm text-coral font-serif">{testimonial.title}</p>
         <p className="text-sm text-muted-foreground">{testimonial.company}</p>
       </div>
     </div>
