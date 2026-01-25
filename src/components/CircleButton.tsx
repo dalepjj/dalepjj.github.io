@@ -10,13 +10,13 @@ interface CircleButtonProps {
 }
 
 const CircleButton = ({ to, label, variant = "resume", delay = 0 }: CircleButtonProps) => {
-  const baseClasses = "w-32 h-32 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center font-serif text-lg transition-all duration-300 ease-out text-charcoal";
+  const baseClasses = "w-32 h-32 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center font-serif text-lg transition-all duration-300 ease-out text-charcoal backdrop-blur-md bg-white/40 border border-white/60 shadow-lg shadow-black/5";
   
   const variantClasses = {
-    resume: "bg-gradient-to-br from-[#F5D0CE] to-[#E8A5A0] shadow-lg shadow-[#E8A5A0]/25 hover:shadow-xl hover:shadow-[#E8A5A0]/40 hover:scale-105 hover:-translate-y-1",
-    work: "bg-gradient-to-br from-[#D4E5D8] to-[#A8CEB4] shadow-lg shadow-[#A8CEB4]/25 hover:shadow-xl hover:shadow-[#A8CEB4]/40 hover:scale-105 hover:-translate-y-1",
-    testimonials: "bg-gradient-to-br from-[#E5D8EB] to-[#C9B3D6] shadow-lg shadow-[#C9B3D6]/25 hover:shadow-xl hover:shadow-[#C9B3D6]/40 hover:scale-105 hover:-translate-y-1",
-    contact: "bg-gradient-to-br from-[#D4E0EB] to-[#A8C4D9] shadow-lg shadow-[#A8C4D9]/25 hover:shadow-xl hover:shadow-[#A8C4D9]/40 hover:scale-105 hover:-translate-y-1",
+    resume: "hover:bg-[#F5D0CE]/50 hover:border-[#E8A5A0]/40 hover:shadow-xl hover:shadow-[#E8A5A0]/20 hover:scale-105 hover:-translate-y-1",
+    work: "hover:bg-[#D4E5D8]/50 hover:border-[#A8CEB4]/40 hover:shadow-xl hover:shadow-[#A8CEB4]/20 hover:scale-105 hover:-translate-y-1",
+    testimonials: "hover:bg-[#E5D8EB]/50 hover:border-[#C9B3D6]/40 hover:shadow-xl hover:shadow-[#C9B3D6]/20 hover:scale-105 hover:-translate-y-1",
+    contact: "hover:bg-[#D4E0EB]/50 hover:border-[#A8C4D9]/40 hover:shadow-xl hover:shadow-[#A8C4D9]/20 hover:scale-105 hover:-translate-y-1",
   };
 
   const icons = {
