@@ -84,7 +84,7 @@ const Header = () => {
               <Menu className="w-6 h-6" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[280px] pt-16">
+          <SheetContent side="right" className="w-[280px] pt-16 pl-10">
             <nav className="flex flex-col gap-6" aria-label="Mobile navigation">
               {mobileNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
@@ -102,8 +102,8 @@ const Header = () => {
                         isHomeLink 
                           ? "font-serif text-foreground" 
                           : isPlayLink
-                            ? "italic text-muted-foreground hover:text-foreground"
-                            : isActive 
+                            ? "text-muted-foreground hover:text-foreground"
+                            : isActive
                               ? "text-foreground" 
                               : "text-muted-foreground hover:text-foreground"
                       }`}
@@ -117,7 +117,7 @@ const Header = () => {
                         />
                       )}
                       {item.name}
-                      {isPlayLink && <Gamepad2 className="w-5 h-5" />}
+                      {isPlayLink && <Gamepad2 className="w-5 h-5 ml-1" />}
                     </Link>
                   </Fragment>
                 );
