@@ -18,6 +18,12 @@ const Header = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  const mobileNavItems = [
+    { name: "Dale Jacobs", path: "/" },
+    ...navItems,
+    { name: "Play", path: "/play" },
+  ];
+
   return (
     <motion.header 
       initial={{ opacity: 0, y: -10 }}
@@ -80,8 +86,9 @@ const Header = () => {
           </SheetTrigger>
           <SheetContent side="right" className="w-[280px] pt-16">
             <nav className="flex flex-col gap-6" aria-label="Mobile navigation">
-              {navItems.map((item) => {
+              {mobileNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
+                const isHomeLink = item.path === "/";
                 return (
                   <Link
                     key={item.name}
@@ -94,7 +101,9 @@ const Header = () => {
                   >
                     <span 
                       className={`w-2 h-2 rounded-full transition-all ${
-                        isActive ? "bg-coral" : "bg-transparent"
+                        isHomeLink 
+                          ? (isActive ? "bg-coral" : "border-2 border-coral bg-transparent")
+                          : (isActive ? "bg-coral" : "bg-transparent")
                       }`} 
                     />
                     {item.name}
