@@ -31,7 +31,7 @@ const Resume = () => {
       period: "September 2025 – Present",
       title: "Senior Product Manager - AI and Data",
       company: "Loftware",
-      description: "I'm currently architecting the AI and Data product strategy, establishing a unified data platform to power intelligence across our core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using that behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
+      description: "I'm currently architecting the AI and Data product strategy, establishing a unified data platform to power intelligence across our core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
     },
     {
       period: "March 2022 – August 2025",
@@ -43,7 +43,7 @@ const Resume = () => {
       period: "January 2019 – March 2022",
       title: "Senior Product Manager",
       company: "EVRYTHNG (Acquired by Digimarc)",
-      description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our intelligence with marking tech was a key driver in Digimarc's decision to acquire the company.",
+      description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our data intelligence with marking tech was a key factor in Digimarc's decision to acquire the company.",
     },
     {
       period: "December 2014 – January 2017",
