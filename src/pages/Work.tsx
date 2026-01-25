@@ -23,7 +23,7 @@ const WorkItem = ({ title, description, metrics, delay = 0, link }: WorkItemProp
         <h3 className="font-serif text-2xl font-medium group-hover:text-coral transition-colors">
           {title}
         </h3>
-        <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-coral transition-colors" />
+        <ArrowUpRight className="w-6 h-6 flex-shrink-0 text-muted-foreground group-hover:text-coral transition-colors" />
       </div>
       <p className="body-text mb-6">{description}</p>
       {metrics && (
