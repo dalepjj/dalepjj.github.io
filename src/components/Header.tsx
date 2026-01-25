@@ -94,8 +94,14 @@ const Header = () => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setIsOpen(false)}
-                    className={`text-lg font-serif flex items-center gap-3 transition-colors ${
-                      isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    className={`text-lg flex items-center gap-3 transition-colors ${
+                      isHomeLink 
+                        ? "font-serif text-foreground" 
+                        : item.path === "/play"
+                          ? "italic text-muted-foreground hover:text-foreground"
+                          : isActive 
+                            ? "text-foreground" 
+                            : "text-muted-foreground hover:text-foreground"
                     }`}
                     aria-current={isActive ? "page" : undefined}
                   >
