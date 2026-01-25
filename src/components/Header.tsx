@@ -72,6 +72,30 @@ const Header = () => {
               </div>
             );
           })}
+          
+          {/* Play link - separated as secondary navigation */}
+          <div className="flex items-center gap-6">
+            <span className="nav-divider" />
+            <Link
+              to="/play"
+              className={`nav-link relative flex items-center gap-1.5 ${
+                location.pathname === "/play" 
+                  ? "text-foreground font-medium" 
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              aria-current={location.pathname === "/play" ? "page" : undefined}
+            >
+              Play
+              <Gamepad2 className="w-4 h-4" />
+              {location.pathname === "/play" && (
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-coral rounded-full"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </Link>
+          </div>
         </nav>
 
         {/* Mobile Navigation */}
