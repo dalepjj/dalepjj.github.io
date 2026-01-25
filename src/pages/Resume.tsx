@@ -15,7 +15,7 @@ const ExperienceItem = ({ period, title, company, description, delay = 0 }: Expe
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay }}
-    className="border-l-4 border-coral pl-6 py-4"
+    className="border-l-2 border-coral pl-6 py-4"
   >
     <p className="text-sm text-muted-foreground mb-2">{period}</p>
     <h3 className="font-serif text-xl font-medium leading-tight">
@@ -93,9 +93,9 @@ const Resume = () => {
 
   const certifications = [
     "First Class BA (Hons) Business – Manchester Metropolitan University Business School",
-    "GS1 Standards Professional",
     "Certified Scrum Product Owner (CSPO)",
     "PRINCE2 Practitioner",
+    "GS1 Standards Professional",
     "Certified Pendo Administrator",
     "Business Analyst of the Year, awarded by the IIBA",
   ];
