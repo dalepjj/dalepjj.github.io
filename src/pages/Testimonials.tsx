@@ -25,7 +25,7 @@ const testimonials: Testimonial[] = [
     title: "Director, Quality Engineering",
     company: "EVRYTHNG & Digimarc",
     photo: charlesPhoto,
-    quote: "Dale is the kind of product leader that executive teams depend on, and for good reason. Having worked with him over several years, I've seen him take complete ownership of every project, delivering exceptional work that consistently exceeds expectations. His attention to detail is evident in everything he does, from the strategic roadmaps he designs to his clear, proactive communication with stakeholders. What truly sets Dale apart is his reliability. When he commits to something, it gets done to the highest standard. Executive teams trust him because he's earned it through consistent, quality execution. Simply put, if I were building a team to deliver a product, Dale would be on it every time. He's trustworthy, hardworking, and here's what makes him truly exceptional: he gives 110% every single day. Whether it's a major product launch or daily execution, he brings the same level of commitment year after year. That sustained drive to deliver excellence is incredibly rare."
+    quote: "Dale is a genuinely high-quality product leader. He's deeply trusted by the executive team and consistently takes ownership far beyond what you'd expect from a typical product role. His attention to detail, especially around design and product direction, sets a very high bar, and everything he delivers is done to an exceptional standard. Dale is highly communicative, relentlessly dependable, and always gives 110%. If I were building a top-tier team, he'd absolutely be in it."
   }
 ];
 
