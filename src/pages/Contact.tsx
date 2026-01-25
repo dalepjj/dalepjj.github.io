@@ -56,7 +56,7 @@ const Contact = () => {
             <h1 className="section-title mb-4">Let's Connect</h1>
             <p className="body-text">
               I'm always interested in discussing product strategy, leadership opportunities, 
-              or how to build great SaaS products. Feel free to reach out.
+              or how to build great SaaS products. Feel free to get in touch.
             </p>
           </motion.div>
 
