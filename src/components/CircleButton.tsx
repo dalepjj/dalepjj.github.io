@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 interface CircleButtonProps {
   to: string;
   label: string;
-  variant?: "resume" | "work" | "contact";
+  variant?: "resume" | "work" | "contact" | "testimonials";
   delay?: number;
 }
 
@@ -14,6 +14,7 @@ const CircleButton = ({ to, label, variant = "resume", delay = 0 }: CircleButton
     resume: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
     work: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
     contact: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+    testimonials: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
   };
 
   return (
