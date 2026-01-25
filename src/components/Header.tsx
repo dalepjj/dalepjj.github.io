@@ -31,8 +31,8 @@ const Header = () => {
       opacity: 1,
       x: 0,
       transition: {
-        delay: i * 0.05,
-        duration: 0.3,
+        delay: i * 0.1,
+        duration: 0.4,
         ease: "easeOut" as const,
       },
     }),
