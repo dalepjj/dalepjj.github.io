@@ -36,7 +36,7 @@ const Header = () => {
           <span className="font-serif text-lg tracking-tight">Dale Jacobs</span>
         </Link>
         
-        <nav className="flex items-center gap-3 sm:gap-6" aria-label="Main navigation">
+        <nav className="flex items-center gap-2 sm:gap-6" aria-label="Main navigation">
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.path;
             return (

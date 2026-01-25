@@ -59,7 +59,7 @@ const Index = () => {
             </motion.div>
 
             {/* Circle Navigation Buttons */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+            <div className="grid grid-cols-2 justify-items-center lg:justify-items-start gap-4 max-w-[280px] md:max-w-[304px] mx-auto lg:mx-0">
               <CircleButton to="/resume" label="Resume" variant="resume" delay={0.5} />
               <CircleButton to="/work" label="Work" variant="work" delay={0.6} />
               <CircleButton to="/testimonials" label="Testimonials" variant="testimonials" delay={0.7} />
