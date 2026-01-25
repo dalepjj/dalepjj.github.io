@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu } from "lucide-react";
+import { Menu, Gamepad2 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -21,13 +21,13 @@ const Header = () => {
   const mobileNavItems = [
     { name: "Dale Jacobs", path: "/" },
     ...navItems,
-    { name: "Play", path: "/play" },
+    { name: "Play Sprint Runner", path: "/play" },
   ];
 
   return (
     <motion.header 
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={isMobile ? false : { opacity: 0, y: -10 }}
+      animate={isMobile ? false : { opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm"
     >
@@ -89,31 +89,41 @@ const Header = () => {
               {mobileNavItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 const isHomeLink = item.path === "/";
+                const isPlayLink = item.path === "/play";
                 return (
-                  <Link
-                    key={item.name}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`text-lg flex items-center gap-3 transition-colors ${
-                      isHomeLink 
-                        ? "font-serif text-foreground" 
-                        : item.path === "/play"
-                          ? "italic text-muted-foreground hover:text-foreground"
-                          : isActive 
-                            ? "text-foreground" 
-                            : "text-muted-foreground hover:text-foreground"
-                    }`}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    <span 
-                      className={`w-2 h-2 rounded-full transition-all ${
+                  <Fragment key={item.name}>
+                    {isPlayLink && (
+                      <div className="border-t border-border my-2" />
+                    )}
+                    <Link
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`text-lg flex items-center gap-3 transition-colors ${
                         isHomeLink 
-                          ? (isActive ? "bg-coral" : "border-2 border-coral bg-transparent")
-                          : (isActive ? "bg-coral" : "bg-transparent")
-                      }`} 
-                    />
-                    {item.name}
-                  </Link>
+                          ? "font-serif text-foreground" 
+                          : isPlayLink
+                            ? "italic text-muted-foreground hover:text-foreground"
+                            : isActive 
+                              ? "text-foreground" 
+                              : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      aria-current={isActive ? "page" : undefined}
+                    >
+                      <span 
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          isHomeLink 
+                            ? (isActive ? "bg-coral" : "border-2 border-coral bg-transparent")
+                            : (isActive ? "bg-coral" : "bg-transparent")
+                        }`} 
+                      />
+                      {isPlayLink && <Gamepad2 className="w-5 h-5" />}
+                      {isHomeLink ? (
+                        <span className="border-b-2 border-coral pb-0.5">{item.name}</span>
+                      ) : (
+                        item.name
+                      )}
+                    </Link>
+                  </Fragment>
                 );
               })}
             </nav>
