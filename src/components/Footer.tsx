@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="border-t border-border mt-20">
       <div className="content-container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h4 className="text-sm font-medium mb-2">Email</h4>
             <a 
@@ -37,16 +37,6 @@ const Footer = () => {
             >
               @dalejacobs.uk
             </a>
-          </div>
-          
-          <div>
-            <h4 className="text-sm font-medium mb-2">Fun</h4>
-            <Link 
-              to="/play" 
-              className="text-muted-foreground hover:text-foreground transition-colors text-sm"
-            >
-              Play Sprint Runner
-            </Link>
           </div>
           
           <div className="md:text-right">
