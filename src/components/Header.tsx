@@ -21,7 +21,7 @@ const Header = () => {
   const mobileNavItems = [
     { name: "Dale Jacobs", path: "/" },
     ...navItems,
-    { name: "Play Sprint Runner", path: "/play" },
+    { name: "Play", path: "/play" },
   ];
 
   return (
@@ -109,19 +109,15 @@ const Header = () => {
                       }`}
                       aria-current={isActive ? "page" : undefined}
                     >
-                      <span 
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          isHomeLink 
-                            ? (isActive ? "bg-coral" : "border-2 border-coral bg-transparent")
-                            : (isActive ? "bg-coral" : "bg-transparent")
-                        }`} 
-                      />
-                      {isPlayLink && <Gamepad2 className="w-5 h-5" />}
-                      {isHomeLink ? (
-                        <span className="border-b-2 border-coral pb-0.5">{item.name}</span>
-                      ) : (
-                        item.name
+                      {isHomeLink && (
+                        <span 
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            isActive ? "bg-coral" : "border-2 border-coral bg-transparent"
+                          }`} 
+                        />
                       )}
+                      {item.name}
+                      {isPlayLink && <Gamepad2 className="w-5 h-5" />}
                     </Link>
                   </Fragment>
                 );
