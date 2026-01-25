@@ -22,7 +22,7 @@ const Header = () => {
       <div className="content-container py-6 flex items-center justify-between">
         <Link 
           to="/" 
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-2 group"
           aria-label="Dale Jacobs - Home"
           aria-current={isHome ? "page" : undefined}
         >
@@ -33,14 +33,14 @@ const Header = () => {
                 : "border-2 border-coral bg-transparent group-hover:bg-coral/20"
             }`} 
           />
-          <span className="font-serif text-lg tracking-tight">Dale Jacobs</span>
+          <span className="font-serif text-lg tracking-tight whitespace-nowrap">Dale Jacobs</span>
         </Link>
         
-        <nav className="flex items-center gap-2 sm:gap-6" aria-label="Main navigation">
+        <nav className="flex items-center gap-1 sm:gap-6" aria-label="Main navigation">
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.path;
             return (
-              <div key={item.name} className="flex items-center gap-3 sm:gap-6">
+              <div key={item.name} className="flex items-center gap-1 sm:gap-6">
                 <Link
                   to={item.path}
                   className={`nav-link relative ${isActive ? "text-foreground font-medium" : ""}`}
@@ -55,7 +55,7 @@ const Header = () => {
                     />
                   )}
                 </Link>
-                {index < navItems.length - 1 && <span className="nav-divider" />}
+                {index < navItems.length - 1 && <span className="nav-divider hidden sm:block" />}
               </div>
             );
           })}
