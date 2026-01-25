@@ -98,7 +98,7 @@ const Header = () => {
                     <Link
                       to={item.path}
                       onClick={() => setIsOpen(false)}
-                      className={`text-lg flex items-center gap-3 transition-colors ${
+                      className={`text-lg flex items-center gap-3 transition-colors relative ${
                         isHomeLink 
                           ? "font-serif text-foreground" 
                           : isPlayLink
@@ -111,7 +111,7 @@ const Header = () => {
                     >
                       {isHomeLink && (
                         <span 
-                          className={`w-2 h-2 rounded-full transition-all ${
+                          className={`absolute -left-5 w-2 h-2 rounded-full transition-all ${
                             isActive ? "bg-coral" : "border-2 border-coral bg-transparent"
                           }`} 
                         />
