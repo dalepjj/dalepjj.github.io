@@ -4,10 +4,19 @@ import { motion } from "framer-motion";
 interface CircleButtonProps {
   to: string;
   label: string;
+  variant?: "resume" | "work" | "contact" | "testimonials";
   delay?: number;
 }
 
-const CircleButton = ({ to, label, delay = 0 }: CircleButtonProps) => {
+const CircleButton = ({ to, label, variant = "resume", delay = 0 }: CircleButtonProps) => {
+  const baseClasses = "w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center font-serif text-lg transition-all duration-300 text-charcoal";
+  const variantClasses = {
+    resume: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+    work: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+    contact: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+    testimonials: "bg-[#EEC7C4] hover:brightness-95 hover:scale-105",
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -16,7 +25,7 @@ const CircleButton = ({ to, label, delay = 0 }: CircleButtonProps) => {
     >
       <Link
         to={to}
-        className="w-32 h-32 md:w-36 md:h-36 rounded-full flex items-center justify-center font-serif text-lg transition-all duration-300 ease-out text-charcoal bg-transparent border-2 border-coral hover:bg-coral-light hover:scale-[1.02] hover:-translate-y-0.5"
+        className={`${baseClasses} ${variantClasses[variant]}`}
         aria-label={`Go to ${label} page`}
       >
         {label}
