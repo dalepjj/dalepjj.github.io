@@ -37,7 +37,7 @@ const Resume = () => {
       period: "March 2022 – August 2025",
       title: "Director of Product Management",
       company: "Digimarc",
-      description: "Following the acquisition of EVRYTHNG, I stepped up to lead the global product team and oversee our new unified platform. It was a massive integration effort - I'm especially proud that we launched our first combined product in just eight months and secured a landmark deal with Unilever for the world's largest deployment of GS1 Digital Link QR codes. I also managed the business side of the portfolio, driving 18% ARR growth by simplifying SaaS pricing to shorten deal cycles and introducing self-service strategies that slashed onboarding time by 67%.",
+      description: "Following the acquisition of EVRYTHNG, I stepped up to lead the global product team and oversee our new unified platform. It was a massive integration effort - I'm especially proud that we launched our first combined product in just eight months and secured a landmark deal with Unilever for the world's largest deployment of GS1 Digital Link QR codes. Contributed to 18% ARR growth by leading strategic product initiatives, including the simplification of SaaS pricing to shorten deal cycles. Additionally, introduced self-service strategies that reduced onboarding time by 67%.",
     },
     {
       period: "January 2019 – March 2022",
