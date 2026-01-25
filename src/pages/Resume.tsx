@@ -95,6 +95,7 @@ const Resume = () => {
     "First Class BA (Hons) Business – Manchester Metropolitan University Business School",
     "GS1 Standards Professional",
     "Certified Scrum Product Owner (CSPO)",
+    "PRINCE2 Practitioner",
     "Certified Pendo Administrator",
     "Business Analyst of the Year, awarded by the IIBA",
   ];

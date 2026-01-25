@@ -78,15 +78,15 @@ const Header = () => {
             <span className="nav-divider" />
             <Link
               to="/play"
-              className={`nav-link relative flex items-center gap-1.5 ${
+              className={`nav-link relative flex items-center ${
                 location.pathname === "/play" 
-                  ? "text-foreground font-medium" 
+                  ? "text-foreground" 
                   : "text-muted-foreground hover:text-foreground"
               }`}
               aria-current={location.pathname === "/play" ? "page" : undefined}
+              aria-label="Play Sprint Runner"
             >
-              Play
-              <Gamepad2 className="w-4 h-4" />
+              <Gamepad2 className="w-5 h-5" />
               {location.pathname === "/play" && (
                 <motion.span
                   layoutId="nav-underline"
