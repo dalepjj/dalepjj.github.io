@@ -94,7 +94,7 @@ const Header = () => {
                     key={item.name}
                     to={item.path}
                     onClick={() => setIsOpen(false)}
-                    className={`text-lg font-medium flex items-center gap-3 transition-colors ${
+                    className={`text-lg font-serif flex items-center gap-3 transition-colors ${
                       isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                     aria-current={isActive ? "page" : undefined}
