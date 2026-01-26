@@ -30,18 +30,18 @@ const testimonials: Testimonial[] = [
     quote: "Dale is a talented product leader, a clear and confident communicator, and someone who thrives in fast-moving, ambiguous environments. In my time working with Dale, he demonstrated a rare ability to turn messy feedback into focused, actionable direction, and proved to be an outstanding cross-functional partner—thoughtful, collaborative, and genuinely supportive of other teams. On top of that, he's just a good person: personable, positive, respectful, and super easy to work with."
   },
   {
-    name: "Beth Gantz",
-    title: "Head of Global Sales",
-    company: "Digimarc",
-    photo: bethPhoto,
-    quote: "Dale is one of the best product leaders I have worked with. He is an incredible listener and a true collaborator, always focused on what will make things clearer and easier for customers and for the teams supporting them. From a sales perspective, Dale was a fantastic partner. He worked closely with us to align product and sales, built tools that simplified conversations, and consistently thought through what customers actually needed to be successful. He had a strong ability to translate product strategy into something practical and usable in the field. Dale works extremely well in fast paced, challenging environments and brings calm, clarity, and focus even when things are moving quickly. He is also excellent in front of customers, with a strong presence, clear communication, and presentation skills that build trust. I would absolutely love to work with Dale again and would highly recommend him to any organization looking for a collaborative and effective product leader."
-  },
-  {
     name: "Charles Adeeko",
     title: "Director, Quality Engineering",
     company: "EVRYTHNG & Digimarc",
     photo: charlesPhoto,
     quote: "Dale is the kind of product leader that executive teams depend on, and for good reason. Having worked with him over several years, I've seen him take complete ownership of every project, delivering exceptional work that consistently exceeds expectations. His attention to detail is evident in everything he does, from the strategic roadmaps he designs to his clear, proactive communication with stakeholders. What truly sets Dale apart is his reliability. When he commits to something, it gets done to the highest standard. Executive teams trust him because he's earned it through consistent, quality execution. Simply put, if I were building a team to deliver a product, Dale would be on it every time. He's trustworthy, hardworking, and here's what makes him truly exceptional: he gives 110% every single day. Whether it's a major product launch or daily execution, he brings the same level of commitment year after year. That sustained drive to deliver excellence is incredibly rare."
+  },
+  {
+    name: "Beth Gantz",
+    title: "Head of Global Sales",
+    company: "Digimarc",
+    photo: bethPhoto,
+    quote: "Dale is one of the best product leaders I have worked with. He is an incredible listener and a true collaborator, always focused on what will make things clearer and easier for customers and for the teams supporting them. From a sales perspective, Dale was a fantastic partner. He worked closely with us to align product and sales, built tools that simplified conversations, and consistently thought through what customers actually needed to be successful. He had a strong ability to translate product strategy into something practical and usable in the field. Dale works extremely well in fast paced, challenging environments and brings calm, clarity, and focus even when things are moving quickly. He is also excellent in front of customers, with a strong presence, clear communication, and presentation skills that build trust. I would absolutely love to work with Dale again and would highly recommend him to any organization looking for a collaborative and effective product leader."
   }
 ];
 
