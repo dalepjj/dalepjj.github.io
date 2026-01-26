@@ -59,7 +59,7 @@ const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; ind
         className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover"
       />
       <div>
-        <h3 className="font-serif text-lg font-medium text-coral">{testimonial.name}</h3>
+        <h3 className="font-serif text-lg font-medium text-foreground">{testimonial.name}</h3>
         <p className="text-sm text-foreground font-serif">{testimonial.title}</p>
         <p className="text-sm text-muted-foreground">{testimonial.company}</p>
       </div>
