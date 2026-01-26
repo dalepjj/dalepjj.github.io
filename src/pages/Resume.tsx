@@ -46,6 +46,12 @@ const Resume = () => {
       description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our data intelligence with marking tech was a key factor in Digimarc's decision to acquire the company.",
     },
     {
+      period: "January 2017 – December 2018",
+      title: "Senior Product Manager",
+      company: "Sensormatic",
+      description: "I led the critical transition of our RFID mobile and web solutions from on-premise to SaaS, a move that drastically accelerated time-to-value for our customers. I was also a vocal advocate for UX investment - securing dedicated design resources to drive usability improvements. Day-to-day, I served as Product Owner for two distributed scrum teams, ensuring engineering output stayed strictly aligned with business priorities.",
+    },
+    {
       period: "December 2014 – January 2017",
       title: "Business Solutions Manager",
       company: "Sensormatic",
