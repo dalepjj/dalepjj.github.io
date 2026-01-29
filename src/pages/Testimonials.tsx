@@ -18,11 +18,11 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: "Meg Rotondo",
-    title: "VP, Product Operations",
-    company: "Digimarc",
-    photo: megPhoto,
-    quote: "Dale is an exceptional product leader: strategic, technically sophisticated, and able to see the full picture while bringing clarity to complexity. He has a rare ability to understand diverse perspectives and guide teams toward alignment with consistent calm, insight, and empathy. Dale transformed how our company captured and prioritized requests, leveraging simple tools like Jira Product Discovery to streamline processes and create greater transparency. He excels at leading and inspiring globally distributed teams and navigating across cultures to help individuals reach their full potential. Beyond his product leadership, Dale is simply an excellent human: thoughtful, steady, and a true partner."
+    name: "Dominique (Dom) Guinard",
+    title: "CTO & Founder",
+    company: "EVRYTHNG",
+    photo: domPhoto,
+    quote: "Dale is one of the most talented and inspirational product leaders I've had the pleasure of working with. I first worked with him at EVRYTHNG and later at Digimarc. Dale consistently excels across all the disciplines a product leader needs to master: internal and external communication, user experience and product design, product management, business development, technical savvy, and much more. Put simply, working with Dale for close to seven years has been a constant source of inspiration in my own journey to becoming a product leader."
   },
   {
     name: "Andrew Bartholomew",
@@ -32,9 +32,23 @@ const testimonials: Testimonial[] = [
     quote: "Dale is a talented product leader, a clear and confident communicator, and someone who thrives in fast-moving, ambiguous environments. In my time working with Dale, he demonstrated a rare ability to turn messy feedback into focused, actionable direction, and proved to be an outstanding cross-functional partner—thoughtful, collaborative, and genuinely supportive of other teams. On top of that, he's just a good person: personable, positive, respectful, and super easy to work with."
   },
   {
+    name: "Brianna Feeney",
+    title: "VP of Product Management & Marketing",
+    company: "Digimarc",
+    photo: briPhoto,
+    quote: "Dale is an outstanding product visionary and a true pleasure to work with. He has a strong track record of building and leading high-performing product teams across a strategic portfolio, driving product-market fit, launching 0-to-1 products, and bringing discipline to go-to-market execution to support both retention and new product growth. Dale brings a creative, thoughtful approach to his work and builds trusted, highly collaborative relationships across functions. He has a strong ability to create efficiency through effective operating models and processes, while also embracing change and incorporating feedback to continuously improve outcomes. As his former manager, working with Dale made me better at my job, his presence and partnership elevated both the team and overall morale. Dale would be an asset to any product organization."
+  },
+  {
+    name: "Meg Rotondo",
+    title: "VP, Product Operations",
+    company: "Digimarc",
+    photo: megPhoto,
+    quote: "Dale is an exceptional product leader: strategic, technically sophisticated, and able to see the full picture while bringing clarity to complexity. He has a rare ability to understand diverse perspectives and guide teams toward alignment with consistent calm, insight, and empathy. Dale transformed how our company captured and prioritized requests, leveraging simple tools like Jira Product Discovery to streamline processes and create greater transparency. He excels at leading and inspiring globally distributed teams and navigating across cultures to help individuals reach their full potential. Beyond his product leadership, Dale is simply an excellent human: thoughtful, steady, and a true partner."
+  },
+  {
     name: "Charles Adeeko",
     title: "Director, Quality Engineering",
-    company: "EVRYTHNG & Digimarc",
+    company: "EVRYTHNG",
     photo: charlesPhoto,
     quote: "Dale is the kind of product leader that executive teams depend on, and for good reason. Having worked with him over several years, I've seen him take complete ownership of every project, delivering exceptional work that consistently exceeds expectations. His attention to detail is evident in everything he does, from the strategic roadmaps he designs to his clear, proactive communication with stakeholders. What truly sets Dale apart is his reliability. When he commits to something, it gets done to the highest standard. Executive teams trust him because he's earned it through consistent, quality execution. Simply put, if I were building a team to deliver a product, Dale would be on it every time. He's trustworthy, hardworking, and here's what makes him truly exceptional: he gives 110% every single day. Whether it's a major product launch or daily execution, he brings the same level of commitment year after year. That sustained drive to deliver excellence is incredibly rare."
   },
@@ -44,20 +58,6 @@ const testimonials: Testimonial[] = [
     company: "Digimarc",
     photo: bethPhoto,
     quote: "Dale is one of the best product leaders I have worked with. He is an incredible listener and a true collaborator, always focused on what will make things clearer and easier for customers and for the teams supporting them. From a sales perspective, Dale was a fantastic partner. He worked closely with us to align product and sales, built tools that simplified conversations, and consistently thought through what customers actually needed to be successful. He had a strong ability to translate product strategy into something practical and usable in the field. Dale works extremely well in fast paced, challenging environments and brings calm, clarity, and focus even when things are moving quickly. He is also excellent in front of customers, with a strong presence, clear communication, and presentation skills that build trust. I would absolutely love to work with Dale again and would highly recommend him to any organization looking for a collaborative and effective product leader."
-  },
-  {
-    name: "Dominique (Dom) Guinard",
-    title: "CTO & Founder",
-    company: "EVRYTHNG",
-    photo: domPhoto,
-    quote: "Dale is one of the most talented and inspirational product leaders I've had the pleasure of working with. I first worked with him at EVRYTHNG and later at Digimarc. Dale consistently excels across all the disciplines a product leader needs to master: internal and external communication, user experience and product design, product management, business development, technical savvy, and much more. Put simply, working with Dale for close to seven years has been a constant source of inspiration in my own journey to becoming a product leader."
-  },
-  {
-    name: "Brianna Feeney",
-    title: "VP of Product Management & Marketing",
-    company: "Digimarc",
-    photo: briPhoto,
-    quote: "Dale is an outstanding product visionary and a true pleasure to work with. He has a strong track record of building and leading high-performing product teams across a strategic portfolio, driving product-market fit, launching 0-to-1 products, and bringing discipline to go-to-market execution to support both retention and new product growth. Dale brings a creative, thoughtful approach to his work and builds trusted, highly collaborative relationships across functions. He has a strong ability to create efficiency through effective operating models and processes, while also embracing change and incorporating feedback to continuously improve outcomes. As his former manager, working with Dale made me better at my job, his presence and partnership elevated both the team and overall morale. Dale would be an asset to any product organization."
   }
 ];
 
