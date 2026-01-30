@@ -11,7 +11,6 @@ import Work from "./pages/Work";
 import Testimonials from "./pages/Testimonials";
 import Contact from "./pages/Contact";
 import Play from "./pages/Play";
-import SprintBlackjack from "./pages/SprintBlackjack";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,7 +27,6 @@ const AnimatedRoutes = () => {
         <Route path="/testimonials" element={<Testimonials />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/play" element={<Play />} />
-        <Route path="/sprint-blackjack" element={<SprintBlackjack />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
