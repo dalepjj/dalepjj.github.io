@@ -7,6 +7,7 @@ import bethPhoto from "@/assets/testimonial-beth.jpg";
 import megPhoto from "@/assets/testimonial-meg.jpg";
 import domPhoto from "@/assets/testimonial-dom.jpg";
 import briPhoto from "@/assets/testimonial-bri.jpg";
+import haleyPhoto from "@/assets/testimonial-haley.jpg";
 
 interface Testimonial {
   name: string;
@@ -58,6 +59,13 @@ const testimonials: Testimonial[] = [
     company: "Digimarc",
     photo: bethPhoto,
     quote: "Dale is one of the best product leaders I have worked with. He is an incredible listener and a true collaborator, always focused on what will make things clearer and easier for customers and for the teams supporting them. From a sales perspective, Dale was a fantastic partner. He worked closely with us to align product and sales, built tools that simplified conversations, and consistently thought through what customers actually needed to be successful. He had a strong ability to translate product strategy into something practical and usable in the field. Dale works extremely well in fast paced, challenging environments and brings calm, clarity, and focus even when things are moving quickly. He is also excellent in front of customers, with a strong presence, clear communication, and presentation skills that build trust. I would absolutely love to work with Dale again and would highly recommend him to any organization looking for a collaborative and effective product leader."
+  },
+  {
+    name: "Haley Noriega",
+    title: "Product Manager",
+    company: "Digimarc",
+    photo: haleyPhoto,
+    quote: "I've worked with a lot of product leaders, and Dale is one of the rare ones who truly understands the balance between focus and ambition. He knows when to say no to protect the team's time and clarity, and when to say yes to the features that genuinely help users win and thrive. He's also an exceptional communicator. Whether he's talking with engineers, executives, or customers, he has a way of shaping the message so everyone feels aligned and motivated. What stands out most is his leadership style. Dale leads with service. He holds his team to a high bar, but somehow holds himself to an even higher one. He shows up, does the hard work alongside you, and earns trust through action every day. Any team would be lucky to learn from him, and I'm lucky to have been led by him!"
   }
 ];
 
