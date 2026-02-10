@@ -1,730 +1,601 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Keyboard, Trophy, Volume2, VolumeX } from "lucide-react";
 import confetti from "canvas-confetti";
 
-const GAME_WIDTH = 640;
+// ── Types ──────────────────────────────────────────────────────────────
+interface AcronymEntry {
+  acronym: string;
+  definition: string[];
+}
+
+interface Level {
+  name: string;
+  title: string;
+  entries: AcronymEntry[];
+  requiredCorrect: number;
+}
+
+type GameState = "start" | "levelIntro" | "playing" | "win" | "gameover";
+
+// ── Data ───────────────────────────────────────────────────────────────
+const LEVELS: Level[] = [
+  {
+    name: "The Basics",
+    title: "Junior PM",
+    requiredCorrect: 4,
+    entries: [
+      { acronym: "MVP", definition: ["Minimum", "Viable", "Product"] },
+      { acronym: "UX", definition: ["User", "Experience"] },
+      { acronym: "UI", definition: ["User", "Interface"] },
+      { acronym: "QA", definition: ["Quality", "Assurance"] },
+      { acronym: "PRD", definition: ["Product", "Requirements", "Document"] },
+      { acronym: "SaaS", definition: ["Software", "as", "a", "Service"] },
+    ],
+  },
+  {
+    name: "The Metrics",
+    title: "Data-Driven",
+    requiredCorrect: 5,
+    entries: [
+      { acronym: "KPI", definition: ["Key", "Performance", "Indicator"] },
+      { acronym: "OKR", definition: ["Objectives", "and", "Key", "Results"] },
+      { acronym: "MAU", definition: ["Monthly", "Active", "Users"] },
+      { acronym: "DAU", definition: ["Daily", "Active", "Users"] },
+      { acronym: "NPS", definition: ["Net", "Promoter", "Score"] },
+      { acronym: "CTR", definition: ["Click-Through", "Rate"] },
+      { acronym: "LTV", definition: ["Lifetime", "Value"] },
+      { acronym: "CAC", definition: ["Customer", "Acquisition", "Cost"] },
+    ],
+  },
+  {
+    name: "Frameworks & Process",
+    title: "Agile Master",
+    requiredCorrect: 5,
+    entries: [
+      { acronym: "RICE", definition: ["Reach,", "Impact,", "Confidence,", "Effort"] },
+      { acronym: "GTM", definition: ["Go-To-Market"] },
+      { acronym: "MoSCoW", definition: ["Must", "have,", "Should", "have,", "Could", "have,", "Won't", "have"] },
+      { acronym: "B2B", definition: ["Business", "to", "Business"] },
+      { acronym: "B2C", definition: ["Business", "to", "Consumer"] },
+      { acronym: "API", definition: ["Application", "Programming", "Interface"] },
+      { acronym: "SDK", definition: ["Software", "Development", "Kit"] },
+    ],
+  },
+  {
+    name: "The Deep Cuts",
+    title: "Product Leader",
+    requiredCorrect: 5,
+    entries: [
+      { acronym: "TAM", definition: ["Total", "Addressable", "Market"] },
+      { acronym: "PLG", definition: ["Product-Led", "Growth"] },
+      { acronym: "ARR", definition: ["Annual", "Recurring", "Revenue"] },
+      { acronym: "MRR", definition: ["Monthly", "Recurring", "Revenue"] },
+      { acronym: "ARPU", definition: ["Average", "Revenue", "Per", "User"] },
+      { acronym: "SLA", definition: ["Service", "Level", "Agreement"] },
+      { acronym: "EBITDA", definition: ["Earnings", "Before", "Interest,", "Taxes,", "Depreciation,", "and", "Amortization"] },
+    ],
+  },
+];
+
+const CORRECT_MESSAGES = [
+  "Stakeholders are nodding!",
+  "Engineering actually understood you!",
+  "That's going in the release notes.",
+  "The board is impressed.",
+  "Ship it!",
+];
+
+const INCORRECT_MESSAGES = [
+  "Let's take this offline.",
+  "Let's circle back in the next sprint.",
+  "We'll add it to the backlog.",
+  "Maybe we need a workshop for that.",
+  "Parking lot item.",
+];
+
 const GAME_HEIGHT = 300;
-const INITIAL_PLAYER_SIZE = 24;
-const MAX_HITS = 5;
-const HIGH_SCORE_KEY = 'scopeCreepHighScore';
+const BASE_FALL_SPEED = 0.6;
 
-const BAD_LABELS = [
-  "Can we make it pop?",
-  "CEO's cousin had an idea...",
-  "Blockchain integration?",
-  "Dark mode (High Priority)",
-  "Legacy Support (IE11)",
-  "AI-powered everything",
-  "Can we pivot to Web3?",
-  "Make it like TikTok",
-  "Add a chatbot",
-  "One more stakeholder review",
-];
-
-const GOOD_LABELS = [
-  "Fix critical bug",
-  "User research",
-  "Accessibility audit",
-  "Performance optimization",
-];
-
-const PHASE_NAMES = ["Random Drift", "Stream Waves", "Spiral Patterns", "Wall Rush"];
-
-interface FeatureRequest {
-  id: number;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  label: string;
-  isGood: boolean;
-  width: number;
-  height: number;
+function getPromotionTitle(misses: number) {
+  if (misses === 0) return "Chief Acronym Officer";
+  if (misses <= 3) return "Senior Director of Alphabet Soup";
+  if (misses <= 6) return "VP of Verbose Phrases";
+  return "Junior Associate of Jargon";
 }
 
-interface PowerUp {
-  id: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+function makeHint(word: string): string {
+  if (word.length <= 1) return word;
+  return word[0] + "·".repeat(word.length - 1);
 }
 
-type GameState = "start" | "playing" | "gameover" | "win";
+function randomPick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
-let audioContext: AudioContext | null = null;
-const getAudioContext = (): AudioContext | null => {
-  try {
-    if (!audioContext) audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    if (audioContext.state === 'suspended') audioContext.resume();
-    return audioContext;
-  } catch { return null; }
-};
-const createBeep = (frequency: number, duration: number, volume = 0.1) => {
-  const ctx = getAudioContext();
-  if (!ctx) return;
+// ── Audio ──────────────────────────────────────────────────────────────
+function createAudioContext() {
+  return new (window.AudioContext || (window as any).webkitAudioContext)();
+}
+
+function playBeep(ctx: AudioContext, freq: number, duration: number, type: OscillatorType = "sine", gain = 0.12) {
   const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.frequency.value = frequency;
-  osc.type = "square";
-  gain.gain.setValueAtTime(volume, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-  osc.start(ctx.currentTime);
+  const g = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  g.gain.value = gain;
+  osc.connect(g);
+  g.connect(ctx.destination);
+  osc.start();
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
   osc.stop(ctx.currentTime + duration);
-};
+}
 
-const playHitSound = () => { createBeep(300, 0.15, 0.1); setTimeout(() => createBeep(200, 0.15, 0.08), 100); };
-const playNoSound = () => { createBeep(523, 0.1, 0.08); setTimeout(() => createBeep(784, 0.1, 0.08), 80); setTimeout(() => createBeep(1047, 0.15, 0.1), 160); };
-const playGreenSound = () => { createBeep(659, 0.08, 0.08); setTimeout(() => createBeep(784, 0.08, 0.08), 60); setTimeout(() => createBeep(1047, 0.12, 0.1), 120); };
-const playWinSound = () => { createBeep(523, 0.12, 0.1); setTimeout(() => createBeep(659, 0.12, 0.1), 100); setTimeout(() => createBeep(784, 0.12, 0.1), 200); setTimeout(() => createBeep(1047, 0.3, 0.12), 300); };
-const playGameOverSound = () => { createBeep(400, 0.15, 0.1); setTimeout(() => createBeep(300, 0.15, 0.1), 150); setTimeout(() => createBeep(200, 0.2, 0.08), 300); };
+function playCorrectWord(ctx: AudioContext) {
+  playBeep(ctx, 660, 0.12, "sine", 0.1);
+}
 
-interface ScopeCreepSurvivorProps {
+function playFullCorrect(ctx: AudioContext) {
+  [0, 80, 160].forEach((d, i) =>
+    setTimeout(() => playBeep(ctx, 520 + i * 130, 0.2, "sine", 0.1), d)
+  );
+}
+
+function playWrong(ctx: AudioContext) {
+  playBeep(ctx, 180, 0.25, "sawtooth", 0.08);
+}
+
+function playLevelComplete(ctx: AudioContext) {
+  [0, 100, 200, 300].forEach((d, i) =>
+    setTimeout(() => playBeep(ctx, 400 + i * 100, 0.15, "sine", 0.1), d)
+  );
+}
+
+function playGameOverSound(ctx: AudioContext) {
+  [0, 150, 300].forEach((d, i) =>
+    setTimeout(() => playBeep(ctx, 500 - i * 120, 0.3, "sawtooth", 0.08), d)
+  );
+}
+
+function playVictoryFanfare(ctx: AudioContext) {
+  const notes = [523, 587, 659, 784, 880, 1047];
+  notes.forEach((f, i) =>
+    setTimeout(() => playBeep(ctx, f, 0.25, "sine", 0.1), i * 120)
+  );
+}
+
+// ── Component ──────────────────────────────────────────────────────────
+interface Props {
   onBack: () => void;
 }
 
-const ScopeCreepSurvivor = ({ onBack }: ScopeCreepSurvivorProps) => {
-  const gameRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
-  const lastTimeRef = useRef<number>(0);
-  const spawnTimerRef = useRef<number>(0);
-  const powerUpTimerRef = useRef<number>(0);
-  const nextIdRef = useRef(0);
-
+const ScopeCreepSurvivor = ({ onBack }: Props) => {
   const [gameState, setGameState] = useState<GameState>("start");
-  const [playerX, setPlayerX] = useState(GAME_WIDTH / 2);
-  const [playerY, setPlayerY] = useState(GAME_HEIGHT / 2);
-  const [requests, setRequests] = useState<FeatureRequest[]>([]);
-  const [powerUps, setPowerUps] = useState<PowerUp[]>([]);
-  const [mvpProgress, setMvpProgress] = useState(0);
-  const [hits, setHits] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [isNewHighScore, setIsNewHighScore] = useState(false);
-  const [phaseLabel, setPhaseLabel] = useState("");
-  const [containerWidth, setContainerWidth] = useState(GAME_WIDTH);
-  const [edgeGlow, setEdgeGlow] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState(0);
+  const [currentEntryIndex, setCurrentEntryIndex] = useState(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [revealedWords, setRevealedWords] = useState<boolean[]>([]);
+  const [fallY, setFallY] = useState(0);
+  const [inputValue, setInputValue] = useState("");
+  const [inputFlash, setInputFlash] = useState<"none" | "correct" | "wrong">("none");
+  const [feedbackMsg, setFeedbackMsg] = useState("");
+  const [totalMisses, setTotalMisses] = useState(0);
+  const [levelCorrect, setLevelCorrect] = useState(0);
+  const [levelMisses, setLevelMisses] = useState(0);
+  const [soundOn, setSoundOn] = useState(true);
+  const [highScore, setHighScore] = useState<number | null>(null);
 
-  const scaleFactor = containerWidth / GAME_WIDTH;
-  const playerSize = INITIAL_PLAYER_SIZE * (1 + hits * 0.15);
-  const mvpSpeed = Math.max(0.02, 0.06 - hits * 0.012);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const animFrameRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fallYRef = useRef(0);
+  const activeRef = useRef(false);
 
-  const playerXRef = useRef(playerX);
-  const playerYRef = useRef(playerY);
-  const requestsRef = useRef(requests);
-  const powerUpsRef = useRef(powerUps);
-  const mvpProgressRef = useRef(mvpProgress);
-  const hitsRef = useRef(hits);
-  const gameStateRef = useRef(gameState);
-  const playerSizeRef = useRef(playerSize);
-
-  useEffect(() => { playerXRef.current = playerX; }, [playerX]);
-  useEffect(() => { playerYRef.current = playerY; }, [playerY]);
-  useEffect(() => { requestsRef.current = requests; }, [requests]);
-  useEffect(() => { powerUpsRef.current = powerUps; }, [powerUps]);
-  useEffect(() => { mvpProgressRef.current = mvpProgress; }, [mvpProgress]);
-  useEffect(() => { hitsRef.current = hits; }, [hits]);
-  useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
-  useEffect(() => { playerSizeRef.current = playerSize; }, [playerSize]);
-
-  useEffect(() => {
-    const updateSize = () => { if (gameRef.current) setContainerWidth(gameRef.current.clientWidth); };
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(HIGH_SCORE_KEY);
-    if (saved) setHighScore(parseInt(saved, 10));
-  }, []);
-
-  const getPhase = (progress: number) => {
-    if (progress < 25) return 0;
-    if (progress < 50) return 1;
-    if (progress < 75) return 2;
-    return 3;
+  // Refs for stable callbacks in animation loop
+  const stateRef = useRef({
+    currentLevel: 0,
+    currentEntryIndex: 0,
+    levelCorrect: 0,
+    levelMisses: 0,
+    totalMisses: 0,
+    soundOn: true,
+  });
+  stateRef.current = {
+    currentLevel,
+    currentEntryIndex,
+    levelCorrect,
+    levelMisses,
+    totalMisses,
+    soundOn,
   };
 
-  const lastPhaseRef = useRef(-1);
+  const level = LEVELS[currentLevel];
+  const entry = level?.entries[currentEntryIndex];
 
-  const spawnRequest = useCallback((progress: number) => {
-    const phase = getPhase(progress);
-    const isGood = Math.random() < 0.10;
-    const label = isGood
-      ? GOOD_LABELS[Math.floor(Math.random() * GOOD_LABELS.length)]
-      : BAD_LABELS[Math.floor(Math.random() * BAD_LABELS.length)];
-    const w = 90;
-    const h = 24;
-    const id = nextIdRef.current++;
-
-    let x: number, y: number, vx: number, vy: number;
-    const px = playerXRef.current;
-    const py = playerYRef.current;
-    const baseSpeed = 1.2 + phase * 0.4;
-
-    if (phase === 0) {
-      // Random drift
-      const edge = Math.floor(Math.random() * 4);
-      if (edge === 0) { x = -w; y = Math.random() * GAME_HEIGHT; }
-      else if (edge === 1) { x = GAME_WIDTH; y = Math.random() * GAME_HEIGHT; }
-      else if (edge === 2) { x = Math.random() * GAME_WIDTH; y = -h; }
-      else { x = Math.random() * GAME_WIDTH; y = GAME_HEIGHT; }
-      const angle = Math.atan2(py - y, px - x) + (Math.random() - 0.5) * 1.2;
-      vx = Math.cos(angle) * baseSpeed;
-      vy = Math.sin(angle) * baseSpeed;
-    } else if (phase === 1) {
-      // Stream waves - horizontal or vertical
-      const horizontal = Math.random() < 0.5;
-      if (horizontal) {
-        x = Math.random() < 0.5 ? -w : GAME_WIDTH;
-        y = 30 + Math.random() * (GAME_HEIGHT - 60);
-        vx = x < 0 ? baseSpeed * 1.3 : -baseSpeed * 1.3;
-        vy = 0;
-      } else {
-        x = 30 + Math.random() * (GAME_WIDTH - 60);
-        y = Math.random() < 0.5 ? -h : GAME_HEIGHT;
-        vx = 0;
-        vy = y < 0 ? baseSpeed * 1.3 : -baseSpeed * 1.3;
-      }
-    } else if (phase === 2) {
-      // Spiral patterns
-      const angle = Math.random() * Math.PI * 2;
-      const radius = Math.max(GAME_WIDTH, GAME_HEIGHT) * 0.6;
-      x = GAME_WIDTH / 2 + Math.cos(angle) * radius;
-      y = GAME_HEIGHT / 2 + Math.sin(angle) * radius;
-      const spiralAngle = angle + Math.PI + 0.5;
-      vx = Math.cos(spiralAngle) * baseSpeed * 1.2;
-      vy = Math.sin(spiralAngle) * baseSpeed * 1.2;
-    } else {
-      // Wall rush - dense walls with gaps
-      const horizontal = Math.random() < 0.5;
-      if (horizontal) {
-        x = Math.random() < 0.5 ? -w : GAME_WIDTH;
-        y = Math.floor(Math.random() * 5) * (GAME_HEIGHT / 5);
-        vx = x < 0 ? baseSpeed * 1.8 : -baseSpeed * 1.8;
-        vy = 0;
-      } else {
-        x = Math.floor(Math.random() * 6) * (GAME_WIDTH / 6);
-        y = Math.random() < 0.5 ? -h : GAME_HEIGHT;
-        vx = 0;
-        vy = y < 0 ? baseSpeed * 1.8 : -baseSpeed * 1.8;
-      }
-    }
-
-    return { id, x, y, vx, vy, label, isGood, width: w, height: h };
+  useEffect(() => {
+    const stored = localStorage.getItem("decipherHighScore");
+    if (stored) setHighScore(parseInt(stored, 10));
   }, []);
 
-  const triggerConfetti = () => {
-    const duration = 3000;
-    const end = Date.now() + duration;
-    const frame = () => {
-      confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#EEC7C4', '#E48981', '#C3A19E'] });
-      confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#EEC7C4', '#E48981', '#C3A19E'] });
-      if (Date.now() < end) requestAnimationFrame(frame);
+  const getAudioCtx = useCallback(() => {
+    if (!audioCtxRef.current) audioCtxRef.current = createAudioContext();
+    return audioCtxRef.current;
+  }, []);
+
+  const playSound = useCallback(
+    (fn: (ctx: AudioContext) => void) => {
+      if (!stateRef.current.soundOn) return;
+      try { fn(getAudioCtx()); } catch {}
+    },
+    [getAudioCtx]
+  );
+
+  const stopFalling = useCallback(() => {
+    activeRef.current = false;
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+  }, []);
+
+  // advanceEntry & handleMiss use refs so they're always current in the animation loop
+  const advanceEntryRef = useRef<(wasCorrect: boolean) => void>(() => {});
+  const handleMissRef = useRef<() => void>(() => {});
+
+  const startFallingForLevel = useCallback((lvl: number) => {
+    fallYRef.current = 0;
+    setFallY(0);
+    activeRef.current = true;
+    lastTimeRef.current = performance.now();
+    const spd = BASE_FALL_SPEED * (1 + lvl * 0.25);
+
+    const loop = (now: number) => {
+      if (!activeRef.current) return;
+      const delta = (now - lastTimeRef.current) / 16.67;
+      lastTimeRef.current = now;
+      fallYRef.current += spd * delta;
+      setFallY(fallYRef.current);
+      if (fallYRef.current >= GAME_HEIGHT) {
+        activeRef.current = false;
+        handleMissRef.current();
+        return;
+      }
+      animFrameRef.current = requestAnimationFrame(loop);
     };
-    frame();
+    animFrameRef.current = requestAnimationFrame(loop);
+  }, []);
+
+  useEffect(() => () => { stopFalling(); }, [stopFalling]);
+
+  // Define advanceEntry
+  advanceEntryRef.current = (wasCorrect: boolean) => {
+    const s = stateRef.current;
+    const newCorrect = wasCorrect ? s.levelCorrect + 1 : s.levelCorrect;
+    if (wasCorrect) setLevelCorrect(newCorrect);
+
+    const nextIdx = s.currentEntryIndex + 1;
+    const lvl = LEVELS[s.currentLevel];
+
+    if (nextIdx >= lvl.entries.length) {
+      if (newCorrect >= lvl.requiredCorrect) {
+        if (s.currentLevel + 1 >= LEVELS.length) {
+          const finalMisses = s.totalMisses;
+          const prev = localStorage.getItem("decipherHighScore");
+          const prevBest = prev ? parseInt(prev, 10) : Infinity;
+          if (finalMisses < prevBest) {
+            localStorage.setItem("decipherHighScore", finalMisses.toString());
+            setHighScore(finalMisses);
+          }
+          playSound(playVictoryFanfare);
+          confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+          setGameState("win");
+        } else {
+          playSound(playLevelComplete);
+          const nextLevel = s.currentLevel + 1;
+          setCurrentLevel(nextLevel);
+          setCurrentEntryIndex(0);
+          setLevelCorrect(0);
+          setLevelMisses(0);
+          setGameState("levelIntro");
+        }
+      } else {
+        playSound(playGameOverSound);
+        setGameState("gameover");
+      }
+    } else {
+      setCurrentEntryIndex(nextIdx);
+      setWordIndex(0);
+      setRevealedWords(new Array(lvl.entries[nextIdx].definition.length).fill(false));
+      setInputValue("");
+      setFeedbackMsg("");
+      setTimeout(() => {
+        startFallingForLevel(s.currentLevel);
+        inputRef.current?.focus();
+      }, 500);
+    }
+  };
+
+  handleMissRef.current = () => {
+    stopFalling();
+    setTotalMisses((p) => p + 1);
+    setLevelMisses((p) => p + 1);
+    setFeedbackMsg(randomPick(INCORRECT_MESSAGES));
+    playSound(playGameOverSound);
+    setTimeout(() => advanceEntryRef.current(false), 1200);
   };
 
   const startGame = () => {
-    setGameState("playing");
-    setPlayerX(GAME_WIDTH / 2);
-    setPlayerY(GAME_HEIGHT / 2);
-    setRequests([]);
-    setPowerUps([]);
-    setMvpProgress(0);
-    setHits(0);
-    setIsNewHighScore(false);
-    setPhaseLabel("");
-    spawnTimerRef.current = 0;
-    powerUpTimerRef.current = 0;
-    lastPhaseRef.current = -1;
-    lastTimeRef.current = 0;
-    nextIdRef.current = 0;
-    getAudioContext();
+    setCurrentLevel(0);
+    setCurrentEntryIndex(0);
+    setWordIndex(0);
+    setTotalMisses(0);
+    setLevelCorrect(0);
+    setLevelMisses(0);
+    setFeedbackMsg("");
+    setInputValue("");
+    setRevealedWords(new Array(LEVELS[0].entries[0].definition.length).fill(false));
+    setGameState("levelIntro");
   };
 
-  const gameLoop = useCallback((timestamp: number) => {
-    if (gameStateRef.current !== "playing") return;
+  const startLevel = () => {
+    const e = LEVELS[currentLevel].entries[0];
+    setRevealedWords(new Array(e.definition.length).fill(false));
+    setWordIndex(0);
+    setInputValue("");
+    setFeedbackMsg("");
+    setCurrentEntryIndex(0);
+    setGameState("playing");
+    setTimeout(() => {
+      startFallingForLevel(currentLevel);
+      inputRef.current?.focus();
+    }, 100);
+  };
 
-    const dt = lastTimeRef.current ? Math.min((timestamp - lastTimeRef.current) / 16.67, 3) : 1;
-    lastTimeRef.current = timestamp;
+  const handleSubmitWord = () => {
+    if (!entry || gameState !== "playing") return;
+    const typed = inputValue.trim();
+    if (!typed) return;
 
-    // MVP progress
-    setMvpProgress(prev => {
-      const newP = Math.min(prev + mvpSpeed * dt, 100);
-      // Phase transitions
-      const phase = getPhase(newP);
-      if (phase !== lastPhaseRef.current) {
-        lastPhaseRef.current = phase;
-        setPhaseLabel(`Phase ${phase + 1}: ${PHASE_NAMES[phase]}`);
-        setEdgeGlow(true);
-        setTimeout(() => setPhaseLabel(""), 2000);
-        setTimeout(() => setEdgeGlow(false), 1000);
+    const expected = entry.definition[wordIndex];
+    const normalize = (s: string) => s.replace(/[,.:;!?]/g, "").toLowerCase();
+
+    if (normalize(typed) === normalize(expected)) {
+      const newRevealed = [...revealedWords];
+      newRevealed[wordIndex] = true;
+      setRevealedWords(newRevealed);
+      setInputValue("");
+      setInputFlash("correct");
+      setTimeout(() => setInputFlash("none"), 300);
+
+      if (wordIndex + 1 >= entry.definition.length) {
+        stopFalling();
+        setFeedbackMsg(randomPick(CORRECT_MESSAGES));
+        playSound(playFullCorrect);
+        setTimeout(() => advanceEntryRef.current(true), 1000);
+      } else {
+        setWordIndex(wordIndex + 1);
+        playSound(playCorrectWord);
       }
-      if (newP >= 100) {
-        // Win!
-        playWinSound();
-        triggerConfetti();
-        const satisfaction = Math.max(0, 100 - hitsRef.current * 20);
-        if (satisfaction > highScore) {
-          setHighScore(satisfaction);
-          setIsNewHighScore(true);
-          localStorage.setItem(HIGH_SCORE_KEY, satisfaction.toString());
-        }
-        setGameState("win");
-        return 100;
-      }
-      return newP;
-    });
-
-    // Spawning
-    spawnTimerRef.current += dt;
-    const progress = mvpProgressRef.current;
-    const phase = getPhase(progress);
-    const spawnInterval = Math.max(8, 30 - phase * 6);
-
-    if (spawnTimerRef.current > spawnInterval) {
-      spawnTimerRef.current = 0;
-      const batchSize = phase === 3 ? 3 : phase === 2 ? 2 : 1;
-      setRequests(prev => {
-        const newReqs = [];
-        for (let i = 0; i < batchSize; i++) {
-          newReqs.push(spawnRequest(progress));
-        }
-        return [...prev, ...newReqs];
-      });
+    } else {
+      setInputValue("");
+      setInputFlash("wrong");
+      playSound(playWrong);
+      setFeedbackMsg(randomPick(INCORRECT_MESSAGES));
+      setTimeout(() => {
+        setInputFlash("none");
+        setFeedbackMsg("");
+      }, 800);
     }
+  };
 
-    // Power-up spawning
-    powerUpTimerRef.current += dt;
-    if (powerUpTimerRef.current > 60 * (15 + Math.random() * 5) / 16.67) {
-      powerUpTimerRef.current = 0;
-      setPowerUps(prev => [...prev, {
-        id: nextIdRef.current++,
-        x: 50 + Math.random() * (GAME_WIDTH - 100),
-        y: 30 + Math.random() * (GAME_HEIGHT - 80),
-        width: 36,
-        height: 36,
-      }]);
-    }
-
-    // Move requests
-    setRequests(prev => {
-      const px = playerXRef.current;
-      const py = playerYRef.current;
-      const ps = playerSizeRef.current;
-      const half = ps / 2;
-      let hitOccurred = false;
-      let goodCollected = false;
-
-      const updated = prev
-        .map(r => ({ ...r, x: r.x + r.vx * dt, y: r.y + r.vy * dt }))
-        .filter(r => {
-          // Off-screen check
-          if (r.x < -120 || r.x > GAME_WIDTH + 120 || r.y < -60 || r.y > GAME_HEIGHT + 60) return false;
-
-          // Collision
-          const overlap =
-            px - half < r.x + r.width &&
-            px + half > r.x &&
-            py - half < r.y + r.height &&
-            py + half > r.y;
-
-          if (overlap) {
-            if (r.isGood) {
-              goodCollected = true;
-              playGreenSound();
-              setMvpProgress(p => Math.min(p + 6, 100));
-              return false;
-            } else {
-              hitOccurred = true;
-              return false;
-            }
-          }
-          return true;
-        });
-
-      if (hitOccurred) {
-        playHitSound();
-        setHits(h => {
-          const newHits = h + 1;
-          if (newHits >= MAX_HITS) {
-            playGameOverSound();
-            const satisfaction = Math.max(0, 100 - newHits * 20);
-            if (satisfaction > highScore) {
-              setHighScore(satisfaction);
-              setIsNewHighScore(true);
-              localStorage.setItem(HIGH_SCORE_KEY, satisfaction.toString());
-            }
-            setGameState("gameover");
-          }
-          return newHits;
-        });
-      }
-
-      return updated;
-    });
-
-    // Power-up collision
-    setPowerUps(prev => {
-      const px = playerXRef.current;
-      const py = playerYRef.current;
-      const ps = playerSizeRef.current;
-      const half = ps / 2;
-
-      return prev.filter(p => {
-        const overlap =
-          px - half < p.x + p.width &&
-          px + half > p.x &&
-          py - half < p.y + p.height &&
-          py + half > p.y;
-
-        if (overlap) {
-          playNoSound();
-          setRequests([]);
-          setHits(h => Math.max(0, h - 1));
-          return false;
-        }
-        return true;
-      });
-    });
-
-    animationRef.current = requestAnimationFrame(gameLoop);
-  }, [spawnRequest, mvpSpeed, highScore]);
-
-  useEffect(() => {
-    if (gameState === "playing") {
-      lastTimeRef.current = 0;
-      animationRef.current = requestAnimationFrame(gameLoop);
-    }
-    return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
-  }, [gameState, gameLoop]);
-
-  // Keyboard input
-  useEffect(() => {
-    const keys = new Set<string>();
-    const speed = 4;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(e.code)) {
-        e.preventDefault();
-        keys.add(e.code);
-      }
-      if (e.code === 'Space' && gameState === 'start') startGame();
-    };
-    const handleKeyUp = (e: KeyboardEvent) => keys.delete(e.code);
-
-    let moveFrame: number;
-    const moveLoop = () => {
-      if (gameStateRef.current === 'playing') {
-        let dx = 0, dy = 0;
-        if (keys.has('ArrowLeft') || keys.has('KeyA')) dx -= speed;
-        if (keys.has('ArrowRight') || keys.has('KeyD')) dx += speed;
-        if (keys.has('ArrowUp') || keys.has('KeyW')) dy -= speed;
-        if (keys.has('ArrowDown') || keys.has('KeyS')) dy += speed;
-        if (dx !== 0 || dy !== 0) {
-          setPlayerX(x => Math.max(12, Math.min(GAME_WIDTH - 12, x + dx)));
-          setPlayerY(y => Math.max(12, Math.min(GAME_HEIGHT - 12, y + dy)));
-        }
-      }
-      moveFrame = requestAnimationFrame(moveLoop);
-    };
-    moveFrame = requestAnimationFrame(moveLoop);
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      cancelAnimationFrame(moveFrame);
-    };
-  }, [gameState]);
-
-  // Touch/mouse input
-  useEffect(() => {
-    const el = gameRef.current;
-    if (!el) return;
-
-    const mapToGame = (clientX: number, clientY: number) => {
-      const rect = el.getBoundingClientRect();
-      const x = ((clientX - rect.left) / rect.width) * GAME_WIDTH;
-      const y = ((clientY - rect.top) / rect.height) * GAME_HEIGHT;
-      return {
-        x: Math.max(12, Math.min(GAME_WIDTH - 12, x)),
-        y: Math.max(12, Math.min(GAME_HEIGHT - 12, y)),
-      };
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (gameStateRef.current !== 'playing') return;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      const t = e.touches[0];
-      const pos = mapToGame(t.clientX, t.clientY);
-      setPlayerX(pos.x);
-      setPlayerY(pos.y);
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (gameStateRef.current !== 'playing') return;
-      const pos = mapToGame(e.clientX, e.clientY);
-      setPlayerX(pos.x);
-      setPlayerY(pos.y);
-    };
-
-    el.addEventListener('touchmove', onTouchMove, { passive: false });
-    el.addEventListener('mousemove', onMouseMove);
-    return () => {
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('mousemove', onMouseMove);
-    };
-  }, []);
-
-  const satisfaction = Math.max(0, 100 - hits * 20);
-  const phase = getPhase(mvpProgress);
-
-  const gameStyles = `
-    @keyframes ticket-pulse { 0%, 100% { box-shadow: 0 0 4px rgba(34, 197, 94, 0.4); } 50% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.8); } }
-    @keyframes no-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-  `;
+      handleSubmitWord();
+    }
+  };
 
   return (
-    <div>
-      <style>{gameStyles}</style>
-      <div className="text-center mb-8">
-        <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Games
+    <div className="max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => { stopFalling(); onBack(); }}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Back to Games
         </button>
-        <h1 className="section-title mb-4">Scope Creep Survivor</h1>
-        <p className="body-text max-w-xl mx-auto">
-          Dodge feature requests and ship your MVP. Collect green tickets for a boost!
-        </p>
+        <div className="flex items-center gap-3">
+          {highScore !== null && (
+            <span className="text-xs text-muted-foreground">
+              Best: {highScore} miss{highScore !== 1 ? "es" : ""}
+            </span>
+          )}
+          <button
+            onClick={() => setSoundOn(!soundOn)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {soundOn ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
+        </div>
       </div>
 
-      <div className="flex justify-center">
-        <div
-          ref={gameRef}
-          role="application"
-          aria-label="Scope Creep Survivor - Use arrow keys or mouse to dodge"
-          className="relative border border-slate-300 rounded-2xl overflow-hidden select-none cursor-none"
-          style={{
-            width: "100%",
-            maxWidth: GAME_WIDTH,
-            aspectRatio: `${GAME_WIDTH} / ${GAME_HEIGHT}`,
-            touchAction: "none",
-            background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
-          }}
+      {/* Start Screen */}
+      {gameState === "start" && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-12"
         >
-          {/* Edge glow on phase transition */}
-          {edgeGlow && (
-            <div className="absolute inset-0 pointer-events-none z-20" style={{ boxShadow: 'inset 0 0 40px 15px rgba(228, 137, 129, 0.4)', transition: 'opacity 0.3s' }} />
-          )}
+          <Keyboard className="mx-auto mb-4 text-muted-foreground" size={48} />
+          <h2 className="font-serif text-3xl mb-3">The Decipher</h2>
+          <p className="text-muted-foreground mb-2 max-w-md mx-auto">
+            PMs love acronyms. Type the full definition before it hits the bottom.
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            4 levels · {LEVELS.reduce((a, l) => a + l.entries.length, 0)} acronyms · Can you earn a promotion?
+          </p>
+          <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
+            Start Game
+          </Button>
+        </motion.div>
+      )}
 
-          {/* Phase label */}
-          <AnimatePresence>
-            {phaseLabel && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+      {/* Level Intro */}
+      {gameState === "levelIntro" && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-16"
+        >
+          <p className="text-sm text-muted-foreground mb-2">Level {currentLevel + 1}</p>
+          <h2 className="font-serif text-2xl mb-1">{level.name}</h2>
+          <p className="text-muted-foreground mb-6">The "{level.title}" Level</p>
+          <p className="text-xs text-muted-foreground mb-6">
+            Get {level.requiredCorrect} of {level.entries.length} correct to advance
+          </p>
+          <Button onClick={startLevel} className="bg-primary hover:bg-primary/90">
+            Ready
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Playing */}
+      {gameState === "playing" && entry && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+            <span>Level {currentLevel + 1}: {level.name}</span>
+            <span>
+              Acronym {currentEntryIndex + 1}/{level.entries.length} · ✓ {levelCorrect} · ✗ {levelMisses}
+            </span>
+          </div>
+
+          <div
+            className="relative border border-border rounded-xl overflow-hidden bg-background"
+            style={{ height: GAME_HEIGHT, maxWidth: 640 }}
+          >
+            <div
+              className="absolute left-1/2 -translate-x-1/2 font-serif font-bold text-4xl md:text-5xl select-none"
+              style={{
+                top: Math.min(fallY, GAME_HEIGHT - 40),
+                color: "hsl(var(--primary))",
+                textShadow: "0 2px 12px hsl(var(--primary) / 0.3)",
+              }}
+            >
+              {entry.acronym}
+            </div>
+            <div
+              className="absolute bottom-0 left-0 right-0 h-1"
+              style={{ background: "hsl(var(--destructive) / 0.5)" }}
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2 justify-center mt-4 mb-3 min-h-[2rem]">
+            {entry.definition.map((word, i) => (
+              <span
+                key={i}
+                className={`px-2 py-1 rounded text-sm font-mono transition-colors ${
+                  revealedWords[i]
+                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                    : i === wordIndex
+                    ? "bg-muted border border-primary/40 text-foreground"
+                    : "bg-muted/50 text-muted-foreground border border-transparent"
+                }`}
               >
-                <div className="bg-foreground/80 text-background px-4 py-2 rounded-lg font-serif text-lg font-medium">
-                  {phaseLabel}
-                </div>
-              </motion.div>
+                {revealedWords[i] ? word : makeHint(word)}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex gap-2 max-w-md mx-auto">
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type the next word..."
+              autoComplete="off"
+              autoCapitalize="off"
+              className={`flex-1 h-10 rounded-md border bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:text-sm transition-colors ${
+                inputFlash === "correct"
+                  ? "border-green-500 ring-2 ring-green-500/30"
+                  : inputFlash === "wrong"
+                  ? "border-destructive ring-2 ring-destructive/30"
+                  : "border-input"
+              }`}
+            />
+            <Button onClick={handleSubmitWord} size="sm" className="bg-primary hover:bg-primary/90">
+              Enter
+            </Button>
+          </div>
+
+          <AnimatePresence>
+            {feedbackMsg && (
+              <motion.p
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="text-center text-sm text-muted-foreground mt-3 italic"
+              >
+                "{feedbackMsg}"
+              </motion.p>
             )}
           </AnimatePresence>
+        </motion.div>
+      )}
 
-          {/* MVP Progress Bar */}
-          {gameState === "playing" && (
-            <div className="absolute bottom-2 left-4 right-4 z-10">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-medium text-slate-500 whitespace-nowrap">MVP</span>
-                <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-200"
-                    style={{
-                      width: `${mvpProgress}%`,
-                      background: mvpProgress > 75 ? '#22c55e' : mvpProgress > 50 ? '#eab308' : '#EEC7C4',
-                    }}
-                  />
-                </div>
-                <span className="text-[10px] font-medium text-slate-500">{Math.floor(mvpProgress)}%</span>
-              </div>
-            </div>
-          )}
+      {/* Win Screen */}
+      {gameState === "win" && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-12"
+        >
+          <Trophy className="mx-auto mb-4 text-yellow-500" size={48} />
+          <h2 className="font-serif text-2xl mb-2">Product Launched!</h2>
+          <p className="text-muted-foreground mb-1">(Only 2 months late)</p>
+          <p className="text-lg font-serif mt-4 mb-1">Your new title:</p>
+          <p className="text-xl font-bold text-primary mb-4">
+            {getPromotionTitle(totalMisses)}
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Total misses: {totalMisses}
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
+              Play Again
+            </Button>
+            <Button onClick={onBack} variant="outline">
+              Back to Games
+            </Button>
+          </div>
+        </motion.div>
+      )}
 
-          {/* HUD */}
-          {gameState === "playing" && (
-            <>
-              <div className="absolute top-3 left-3 z-10">
-                <div className="text-[10px] text-slate-500 font-medium">
-                  Bloat: {hits}/{MAX_HITS}
-                </div>
-              </div>
-              <div className="absolute top-3 right-3 z-10 text-right">
-                <div className="text-[10px] text-slate-500 font-medium">
-                  Satisfaction: {satisfaction}%
-                </div>
-                {highScore > 0 && (
-                  <div className="text-[9px] text-slate-400">Best: {highScore}%</div>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* Feature requests */}
-          {requests.map(r => (
-            <div
-              key={r.id}
-              className="absolute pointer-events-none"
-              style={{
-                left: r.x * scaleFactor,
-                top: r.y * scaleFactor,
-                width: r.width * scaleFactor,
-                height: r.height * scaleFactor,
-                willChange: 'transform',
-              }}
-            >
-              <div
-                className={`w-full h-full rounded px-1 flex items-center justify-center text-white font-medium overflow-hidden ${
-                  r.isGood ? 'border-2 border-green-500 bg-green-600' : 'bg-red-500/90'
-                }`}
-                style={{
-                  fontSize: `${Math.max(7, 9 * scaleFactor)}px`,
-                  animation: r.isGood ? 'ticket-pulse 1.5s ease-in-out infinite' : undefined,
-                }}
-              >
-                <span className="truncate">{r.label}</span>
-              </div>
-            </div>
-          ))}
-
-          {/* Power-ups */}
-          {powerUps.map(p => (
-            <div
-              key={p.id}
-              className="absolute pointer-events-none"
-              style={{
-                left: p.x * scaleFactor,
-                top: p.y * scaleFactor,
-                width: p.width * scaleFactor,
-                height: p.height * scaleFactor,
-                animation: 'no-pulse 1s ease-in-out infinite',
-              }}
-            >
-              <div className="w-full h-full rounded-full bg-red-600 flex items-center justify-center border-2 border-red-300">
-                <span className="text-white font-black" style={{ fontSize: `${Math.max(8, 11 * scaleFactor)}px` }}>NO</span>
-              </div>
-            </div>
-          ))}
-
-          {/* Player - North Star */}
-          {gameState === "playing" && (
-            <div
-              className="absolute pointer-events-none z-10"
-              style={{
-                left: (playerX - playerSize / 2) * scaleFactor,
-                top: (playerY - playerSize / 2) * scaleFactor,
-                width: playerSize * scaleFactor,
-                height: playerSize * scaleFactor,
-                transition: 'width 0.3s, height 0.3s',
-              }}
-            >
-              <svg viewBox="0 0 40 40" className="w-full h-full" style={{ filter: 'drop-shadow(0 0 6px rgba(238, 199, 196, 0.8))' }}>
-                <polygon
-                  points="20,2 24,14 37,14 27,22 31,35 20,27 9,35 13,22 3,14 16,14"
-                  fill="#EEC7C4"
-                  stroke="#E48981"
-                  strokeWidth="1.5"
-                />
-                <polygon
-                  points="20,8 22,15 30,15 24,20 26,28 20,23 14,28 16,20 10,15 18,15"
-                  fill="white"
-                  opacity="0.4"
-                />
-              </svg>
-            </div>
-          )}
-
-          {/* Start screen */}
-          {gameState === "start" && (
-            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10 gap-3">
-              <Button onClick={startGame} className="bg-primary hover:bg-primary/90 px-8 py-3 text-lg">
-                Start Game
-              </Button>
-              <p className="text-xs text-muted-foreground max-w-xs text-center">
-                Arrow keys / WASD to move, or use mouse / touch
-              </p>
-            </div>
-          )}
-
-          {/* Game over */}
-          {gameState === "gameover" && (
-            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-              <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2 text-primary">Scope Creep Won!</h2>
-              <p className="text-muted-foreground text-sm mb-1">
-                MVP Progress: <span className="font-bold text-foreground">{Math.floor(mvpProgress)}%</span>
-              </p>
-              <p className="text-muted-foreground text-sm mb-1">
-                User Satisfaction: <span className="font-bold text-foreground">{satisfaction}%</span>
-              </p>
-              {isNewHighScore && (
-                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-sm mb-2">
-                  🎉 New Best!
-                </motion.p>
-              )}
-              <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">
-                Sometimes you need someone who knows when to say NO. That's Dale.
-              </p>
-              <div className="flex gap-3">
-                <Button onClick={startGame} variant="outline">Try Again</Button>
-                <Button asChild className="bg-primary hover:bg-primary/90">
-                  <Link to="/contact">Contact Dale</Link>
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Win screen */}
-          {gameState === "win" && (
-            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-              <h2 className="font-serif text-xl md:text-2xl font-medium mb-2">🚀 Product Launched!</h2>
-              <p className="text-muted-foreground text-sm mb-1">(Only 2 months late)</p>
-              <p className="text-muted-foreground text-sm mb-1">
-                User Satisfaction: <span className="font-bold text-foreground">{satisfaction}%</span>
-              </p>
-              {isNewHighScore && (
-                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-sm mb-2">
-                  🎉 New Best!
-                </motion.p>
-              )}
-              <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">
-                You know how to stay focused and ship. So does Dale.
-              </p>
-              <div className="flex gap-3">
-                <Button onClick={startGame} variant="outline">Play Again</Button>
-                <Button asChild className="bg-primary hover:bg-primary/90">
-                  <Link to="/contact">Let's Build Something Real</Link>
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Legend */}
-      {gameState !== "start" && (
-        <div className="text-center mt-6 text-xs text-muted-foreground space-y-1">
-          <p><span className="inline-block w-3 h-3 bg-red-500/90 rounded mr-1 align-middle" /> Bad requests = dodge them</p>
-          <p><span className="inline-block w-3 h-3 bg-green-600 rounded mr-1 align-middle border border-green-400" /> Good requests = collect for MVP boost</p>
-          <p><span className="inline-block w-4 h-4 bg-red-600 rounded-full mr-1 align-middle text-[8px] text-white font-black leading-4 text-center">N</span> "Saying NO" = clears screen & reduces bloat</p>
-        </div>
+      {/* Game Over */}
+      {gameState === "gameover" && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-12"
+        >
+          <h2 className="font-serif text-2xl mb-2">The Jargon Won</h2>
+          <p className="text-muted-foreground mb-1">
+            You needed {level.requiredCorrect} correct but only got {levelCorrect} on Level {currentLevel + 1}.
+          </p>
+          <p className="text-sm text-muted-foreground mt-2 mb-6 italic">
+            "Let's circle back in the next sprint."
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={startGame} className="bg-primary hover:bg-primary/90">
+              Try Again
+            </Button>
+            <Button onClick={onBack} variant="outline">
+              Back to Games
+            </Button>
+          </div>
+        </motion.div>
       )}
     </div>
   );
