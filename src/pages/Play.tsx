@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
@@ -61,25 +61,19 @@ const Play = () => {
                   </Button>
                 </motion.div>
 
-                {/* Scope Creep Survivor Card */}
+                {/* The Decipher Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                   className="border border-border rounded-2xl p-6 flex flex-col items-center text-center hover:border-coral/40 transition-colors"
                 >
-                  <div className="w-12 h-12 mb-4 text-coral">
-                    <svg viewBox="0 0 40 40" className="w-full h-full">
-                      <polygon
-                        points="20,2 24,14 37,14 27,22 31,35 20,27 9,35 13,22 3,14 16,14"
-                        fill="currentColor"
-                        opacity="0.8"
-                      />
-                    </svg>
+                  <div className="w-12 h-12 mb-4 text-coral flex items-center justify-center">
+                    <Keyboard size={32} />
                   </div>
-                  <h2 className="font-serif text-xl mb-2">Scope Creep Survivor</h2>
+                  <h2 className="font-serif text-xl mb-2">The Decipher</h2>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Dodge feature requests and ship your MVP. Say NO to scope creep before it's too late!
+                    PMs love acronyms. Type the full definition before time runs out. Can you earn a promotion?
                   </p>
                   <Button onClick={() => setView("scope")} className="bg-primary hover:bg-primary/90">
                     Play
