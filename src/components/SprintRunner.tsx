@@ -645,8 +645,8 @@ const SprintRunner = ({ onBack }: SprintRunnerProps) => {
         <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Games
         </button>
-        <h1 className="section-title mb-4">Sprint Runner</h1>
-        <p className="body-text max-w-xl mx-auto">
+        <h1 className="section-title mb-4 text-center">Sprint Runner</h1>
+        <p className="body-text max-w-xl mx-auto text-center">
           Navigate the chaos of product development and acquire 1,000 users to achieve product-market fit.
         </p>
       </div>
