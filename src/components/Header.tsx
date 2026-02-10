@@ -114,7 +114,7 @@ const Header = () => {
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Sprint Runner</p>
+                  <p>Play</p>
                 </TooltipContent>
               </Tooltip>
             </div>
