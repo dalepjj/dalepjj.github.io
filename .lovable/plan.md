@@ -1,124 +1,118 @@
 
 
-# Replace "Scope Creep Survivor" with "The Decipher"
+# The Decipher -- Refinements and Routing Update
 
 ## Overview
-Replace the bullet-hell game with a typing game where PM acronyms fall from the top of the screen and players must type out the full definition before they reach the bottom. The game selector hub and routing remain unchanged.
+Eight changes to The Decipher game, plus routing updates so each game has its own URL and the nav bar always links to the `/play` selector hub.
 
-## Files Changed
+## 1. Routing: Give Each Game Its Own URL
 
-**Replace:** `src/components/ScopeCreepSurvivor.tsx` -- completely rewritten as "The Decipher"
+**Files: `src/App.tsx`, `src/pages/Play.tsx`**
 
-**Modify:** `src/pages/Play.tsx` -- update the second game card (title, description, icon) from "Scope Creep Survivor" to "The Decipher"
+- Add two new routes in `App.tsx`: `/play/sprint-runner` and `/play/the-decipher`
+- Create two new thin page components (or render inline) that wrap each game component in `Layout` + `SEO`
+- `/play` remains the game selector hub (no more `useState` view toggling)
+- Each game's "Back to Games" button uses `useNavigate` to go to `/play` (or a `Link`)
+- The Header gamepad icon continues linking to `/play`
+- Sprint Runner and Decipher `onBack` props change to navigate to `/play` via react-router
 
-## Game Design
+**New files:**
+- `src/pages/PlaySprintRunner.tsx` -- Layout + SEO wrapper rendering `<SprintRunner onBack={...} />`
+- `src/pages/PlayTheDecipher.tsx` -- Layout + SEO wrapper rendering `<ScopeCreepSurvivor onBack={...} />`
 
-### Core Loop
-- An acronym (e.g., "MVP") appears at the top of the 640x300 game area and falls downward at a steady pace
-- Below the game area, the full definition is shown with blanks for missing words (e.g., "M______ V_____ P_______")
-- The player types each word in sequence. A text input is focused and each word is checked on Space or Enter
-- If all words are typed correctly before the acronym reaches the bottom, it counts as a success
-- If the acronym hits the bottom, it counts as a miss
+**Modified:** `src/pages/Play.tsx` -- remove `useState` view logic, keep only the selector cards with `Link` to sub-routes
 
-### Levels and Progression
-The game has 4 levels. Each level presents all its acronyms one at a time. The player must complete a minimum number (e.g., 4 out of 6) to advance. Fall speed increases each level.
+## 2. Simplify Game Selector Cards
 
-| Level | Title | Acronyms |
-|---|---|---|
-| 1 | The Basics ("Junior PM") | MVP, UX, UI, QA, PRD, SaaS |
-| 2 | The Metrics ("Data-Driven") | KPI, OKR, MAU, DAU, NPS, CTR, LTV, CAC |
-| 3 | Frameworks and Process ("Agile Master") | RICE, GTM, MoSCoW, B2B, B2C, API, SDK |
-| 4 | The Deep Cuts ("Product Leader") | TAM, PLG, ARR, MRR, ARPU, SLA, EBITDA |
+**File: `src/pages/Play.tsx`**
 
-### Typing Mechanics
-- Input is case-insensitive
-- Each word of the definition is validated individually (typed one at a time, confirmed with Space/Enter)
-- Correctly typed words are revealed in the hint display with a green highlight
-- Wrong words trigger a brief red flash on the input and a witty "incorrect" message
-- For multi-part words like "Go-To-Market", the player types each hyphenated segment as one word (i.e., "Go-To-Market" is one typed entry)
+- Sprint Runner subtext: "Navigate the chaos of product development."
+- The Decipher subtext: "PMs love acronyms. Type the full definition before time runs out."
+- Cards link to `/play/sprint-runner` and `/play/the-decipher` respectively
+- Remove the "Can you earn a promotion?" text and "Jump over bugs..." detail
 
-### Witty Feedback
-Shown as a brief toast/label after each acronym attempt:
+## 3. Sprint Runner Icon Color
 
-**Correct pool:**
-- "Stakeholders are nodding!"
-- "Engineering actually understood you!"
-- "That's going in the release notes."
-- "The board is impressed."
-- "Ship it!"
+**File: `src/pages/Play.tsx`**
 
-**Incorrect pool:**
-- "Let's take this offline."
-- "Let's circle back in the next sprint."
-- "We'll add it to the backlog."
-- "Maybe we need a workshop for that."
-- "Parking lot item."
+Change the Sprint Runner SVG icon wrapper from `text-muted-foreground` to `text-coral` to match The Decipher's keyboard icon.
 
-### Win State and Promotion Titles
-Completing all 4 levels triggers confetti and awards a title based on performance:
+## 4. Level Titles
 
-| Misses | Title |
+**File: `src/components/ScopeCreepSurvivor.tsx`**
+
+Update the `LEVELS` data:
+- Level 1: `name: "The Junior PM"`, remove separate title display
+- Level 2: `name: "The Data-Driven PM"`
+- Level 3: `name: "The Agile Master"`
+- Level 4: `name: "The Product Leader"`
+
+Remove the `title` field usage -- the level intro screen will show just "Level N" and the level name (no more `The "Junior PM" Level` format).
+
+## 5. Remove Volume Toggle
+
+**File: `src/components/ScopeCreepSurvivor.tsx`**
+
+- Remove `soundOn` state and the toggle button from the header
+- Remove `Volume2`/`VolumeX` imports
+- Sound is always on (remove the `if (!stateRef.current.soundOn) return;` guard in `playSound`)
+
+## 6. Remove Falling Time Limit
+
+**File: `src/components/ScopeCreepSurvivor.tsx`**
+
+This is the biggest change. Remove the entire falling animation system:
+- Remove `fallY`, `fallYRef`, `activeRef`, `animFrameRef`, `lastTimeRef`, `startFallingForLevel`, `stopFalling`, `handleMissRef`, `GAME_HEIGHT`, `BASE_FALL_SPEED`
+- Remove the 640x300 game container with the falling acronym and red bottom line
+- Instead, show the acronym prominently (centered, large serif text) with the word hints and input all together in a single clean container
+- On wrong answer: immediately advance to the next acronym (count as a miss), show witty feedback briefly
+- On correct full answer: advance to next acronym (count as correct), show witty feedback
+- The flow becomes: acronym displayed -> player types words -> right = next acronym (correct) / wrong = next acronym (miss)
+
+## 7. Simplify Game Over Screen
+
+**File: `src/components/ScopeCreepSurvivor.tsx`**
+
+Current:
+```
+"The Jargon Won"
+"You needed X correct but only got Y on Level Z."
+"Let's circle back in the next sprint."
+```
+
+Change to:
+```
+"The Jargon Won"
+"Let's circle back in the next sprint."
+```
+
+Remove the line explaining required vs achieved counts.
+
+## 8. Simplify Start Screen
+
+**File: `src/components/ScopeCreepSurvivor.tsx`**
+
+Current:
+```
+"PMs love acronyms. Type the full definition before it hits the bottom."
+"4 levels . 28 acronyms . Can you earn a promotion?"
+```
+
+Change to:
+```
+"Your stakeholders are speaking in riddles. Decode the acronyms to keep the project on track and secure your seat at the table."
+```
+
+Remove the stats subtext line entirely.
+
+## Technical Summary
+
+| File | Action |
 |---|---|
-| 0 | "Chief Acronym Officer" |
-| 1-3 | "Senior Director of Alphabet Soup" |
-| 4-6 | "VP of Verbose Phrases" |
-| 7+ | "Junior Associate of Jargon" |
+| `src/App.tsx` | Add routes `/play/sprint-runner` and `/play/the-decipher` |
+| `src/pages/Play.tsx` | Simplify to card links (no state management), update subtexts, coral icon |
+| `src/pages/PlaySprintRunner.tsx` | New page wrapper for Sprint Runner |
+| `src/pages/PlayTheDecipher.tsx` | New page wrapper for The Decipher |
+| `src/components/ScopeCreepSurvivor.tsx` | Remove falling mechanic, volume toggle, update level titles, simplify start/gameover screens |
+| `src/components/SprintRunner.tsx` | Update `onBack` to use `useNavigate` instead of callback |
 
-High score (fewest misses) saved to localStorage under `decipherHighScore`.
-
-### Visual Design
-- Falling acronym: large bold text descending smoothly from top to bottom
-- Definition hint: word slots displayed below the game area, revealed as typed
-- Level banner: shown at the start of each level with the level title (e.g., "Level 2: The Metrics")
-- Progress indicator: shows "Acronym 3/6" within the current level
-- Clean minimalist style matching Sprint Runner -- no canvas, uses DOM elements with framer-motion for the falling animation
-
-### Audio
-- Correct word: bright ascending beep (reuses AudioContext pattern)
-- Full acronym correct: chord flourish
-- Wrong word: low buzz
-- Level complete: rising arpeggio
-- Game over: descending tones
-- Final win: victory fanfare with confetti
-
-### Input
-- **Desktop**: Auto-focused text input. Type and press Space/Enter to submit each word
-- **Mobile**: Same text input with on-screen keyboard. The game area is compact enough to remain visible above the keyboard
-
-## Game Selector Hub Update (Play.tsx)
-
-Update the second card:
-- **Title**: "The Decipher"
-- **Description**: "PMs love acronyms. Type the full definition before time runs out. Can you earn a promotion?"
-- **Icon**: A keyboard/text icon (e.g., Lucide `Keyboard` icon) instead of the star
-
-The view type `"scope"` can be renamed to `"decipher"` for clarity, and the import updated from `ScopeCreepSurvivor` to `TheDecipher`.
-
-## Technical Details
-
-### Component Structure
-- `TheDecipher` component (~350-400 lines), accepting `onBack: () => void` prop
-- Game state machine: `start` | `playing` | `levelIntro` | `win` | `gameover`
-- Falling animation driven by `requestAnimationFrame` with delta-time (same pattern as Sprint Runner) updating a Y position from 0 to GAME_HEIGHT
-- Fall speed: starts at ~0.8px/frame, increases ~25% per level
-- Each acronym gets a time window based on fall distance / speed
-- No complex collision detection needed -- purely time-based (acronym reaches bottom = miss)
-
-### Data Structure
-```
-interface AcronymEntry {
-  acronym: string;        // e.g., "MVP"
-  definition: string[];   // e.g., ["Minimum", "Viable", "Product"]
-}
-
-interface Level {
-  name: string;           // e.g., "The Basics"
-  title: string;          // e.g., "Junior PM"
-  entries: AcronymEntry[];
-  requiredCorrect: number;
-}
-```
-
-### localStorage
-- Key: `decipherHighScore`
-- Value: fewest total misses across all levels (lower is better)
