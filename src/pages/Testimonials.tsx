@@ -8,6 +8,7 @@ import megPhoto from "@/assets/testimonial-meg.jpg";
 import domPhoto from "@/assets/testimonial-dom.jpg";
 import briPhoto from "@/assets/testimonial-bri.jpg";
 import haleyPhoto from "@/assets/testimonial-haley.jpg";
+import lucyPhoto from "@/assets/testimonial-lucy.jpg";
 
 interface Testimonial {
   name: string;
@@ -31,6 +32,13 @@ const testimonials: Testimonial[] = [
     company: "Digimarc",
     photo: andrewPhoto,
     quote: "Dale is a talented product leader, a clear and confident communicator, and someone who thrives in fast-moving, ambiguous environments. In my time working with Dale, he demonstrated a rare ability to turn messy feedback into focused, actionable direction, and proved to be an outstanding cross-functional partner—thoughtful, collaborative, and genuinely supportive of other teams. On top of that, he's just a good person: personable, positive, respectful, and super easy to work with."
+  },
+  {
+    name: "Lucy Oulton",
+    title: "VP, Operations",
+    company: "EVRYTHNG",
+    photo: lucyPhoto,
+    quote: "Having worked with Dale Jacobs at EVRYTHNG and Digimarc, I can say without hesitation he is the strongest cross-disciplinary product leader I've had the pleasure to partner with. What truly sets Dale apart is not just his rare blend of technical fluency and commercial acumen, but his relentless focus on clarity in execution, whether that's distilling a complex technical architecture into an elegant strategic narrative or shaping an ambiguous market opportunity into a compelling, customer-centric roadmap. Dale has an incredible ability to bridge gaps between engineering, go-to-market and business strategy. He doesn't just define vision, he operationalises it. I've watched him lead teams through ambiguity, coaxing out simplicity without losing nuance, and always ensuring that every stakeholder, from engineers to commercial partners feels informed, aligned, and empowered. What I admire most is his precision in the details that matter: sculpting pricing frameworks that reflect real value, crafting external materials that resonate with customers, and developing adoption strategies that truly drive engagement. Dale's work doesn't just ship, it lands, it sells, and it scales. Simply put: he elevates every team and product he touches."
   },
   {
     name: "Brianna Feeney",
