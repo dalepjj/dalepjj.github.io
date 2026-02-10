@@ -1,138 +1,124 @@
 
 
-# The Scope Creep Survivor -- Implementation Plan
+# Replace "Scope Creep Survivor" with "The Decipher"
 
 ## Overview
-Add a bullet-hell arcade survival game to the Play page, incorporating the "Prioritize" mechanic (suggestion 2) and progressive wave patterns (suggestion 3). Also update the desktop nav tooltip from "Sprint Runner" to "Play".
+Replace the bullet-hell game with a typing game where PM acronyms fall from the top of the screen and players must type out the full definition before they reach the bottom. The game selector hub and routing remain unchanged.
 
-## Architecture
+## Files Changed
 
-### File Changes
+**Replace:** `src/components/ScopeCreepSurvivor.tsx` -- completely rewritten as "The Decipher"
 
-**New Files:**
-- `src/components/SprintRunner.tsx` -- Extract all existing Sprint Runner game code from Play.tsx (move as-is, no logic changes)
-- `src/components/ScopeCreepSurvivor.tsx` -- New bullet-hell game component (~500 lines)
+**Modify:** `src/pages/Play.tsx` -- update the second game card (title, description, icon) from "Scope Creep Survivor" to "The Decipher"
 
-**Modified Files:**
-- `src/pages/Play.tsx` -- Rewrite as a game selector hub that renders either game
-- `src/components/Header.tsx` -- Change tooltip text from "Sprint Runner" to "Play"
+## Game Design
 
----
+### Core Loop
+- An acronym (e.g., "MVP") appears at the top of the 640x300 game area and falls downward at a steady pace
+- Below the game area, the full definition is shown with blanks for missing words (e.g., "M______ V_____ P_______")
+- The player types each word in sequence. A text input is focused and each word is checked on Space or Enter
+- If all words are typed correctly before the acronym reaches the bottom, it counts as a success
+- If the acronym hits the bottom, it counts as a miss
 
-## Game Selector Hub (Play.tsx)
+### Levels and Progression
+The game has 4 levels. Each level presents all its acronyms one at a time. The player must complete a minimum number (e.g., 4 out of 6) to advance. Fall speed increases each level.
 
-The Play page becomes a selection screen with two game cards:
-
-- **Sprint Runner** -- "Navigate the chaos of product development" with a Play button
-- **Scope Creep Survivor** -- "Dodge feature requests and ship your MVP" with a Play button
-
-Selecting a game renders that component. A "Back to Games" link returns to the selector. State managed via a simple `useState<'select' | 'sprint' | 'scope'>`.
-
----
-
-## Scope Creep Survivor -- Game Design
-
-### Core Mechanics
-- **Canvas**: 640x300, same responsive scaling as Sprint Runner
-- **Player**: A North Star icon (SVG), starts small at center. Controlled by arrow keys / WASD (desktop) and touch-drag (mobile)
-- **Enemies**: Labeled "feature request" tickets fly in from all four edges, drifting toward the player with slight homing
-- **MVP Progress Bar**: Fills steadily while the player is alive and not overly bloated. Displayed at bottom of game area
-- **Bloat**: Each hit increases player size by ~15% and slows MVP bar by 20%. After 5 hits, game over ("Scope Creep Won")
-- **"Saying NO" Power-up**: Spawns every 15-20 seconds. Collecting it clears all on-screen requests and reduces bloat by one tier
-- **Win**: Fill MVP bar to 100%. Triggers confetti with "Product Launched! (Only 2 months late)." Score = User Satisfaction based on hits avoided
-- **High score**: Saved to localStorage under `scopeCreepHighScore`
-
-### Suggestion 2: "Prioritize" Mechanic
-- Rare green-labeled requests spawn occasionally (~10% of spawns): "Fix critical bug", "User research", "Accessibility audit", "Performance fix"
-- Collecting a green request gives an MVP bar boost (+5-8%)
-- Missing a green request has no penalty -- it just drifts off-screen
-- Adds strategic depth: players must decide whether to risk moving toward a good request while dodging bad ones
-
-### Suggestion 3: Progressive Wave Patterns
-The game progresses through distinct phases as the MVP bar fills:
-
-| MVP Progress | Phase | Spawn Behavior |
+| Level | Title | Acronyms |
 |---|---|---|
-| 0-25% | **Random Drift** | Requests spawn from random edges, float gently toward center |
-| 25-50% | **Stream Waves** | Requests come in horizontal/vertical streams with gaps to dodge through |
-| 50-75% | **Spiral Patterns** | Requests spiral inward in arcs, requiring circular dodging |
-| 75-100% | **Wall Rush** | Dense walls of requests with narrow gaps, high speed |
+| 1 | The Basics ("Junior PM") | MVP, UX, UI, QA, PRD, SaaS |
+| 2 | The Metrics ("Data-Driven") | KPI, OKR, MAU, DAU, NPS, CTR, LTV, CAC |
+| 3 | Frameworks and Process ("Agile Master") | RICE, GTM, MoSCoW, B2B, B2C, API, SDK |
+| 4 | The Deep Cuts ("Product Leader") | TAM, PLG, ARR, MRR, ARPU, SLA, EBITDA |
 
-Each phase transition triggers a brief "Phase 2: Stream Waves" label flash and a screen-edge glow effect.
+### Typing Mechanics
+- Input is case-insensitive
+- Each word of the definition is validated individually (typed one at a time, confirmed with Space/Enter)
+- Correctly typed words are revealed in the hint display with a green highlight
+- Wrong words trigger a brief red flash on the input and a witty "incorrect" message
+- For multi-part words like "Go-To-Market", the player types each hyphenated segment as one word (i.e., "Go-To-Market" is one typed entry)
 
-### Feature Request Labels (rotating pool)
-Bad (red/orange tickets):
-- "Can we make it pop?"
-- "The CEO's cousin had an idea..."
-- "Blockchain integration?"
-- "Dark mode (High Priority)"
-- "Legacy Support (IE11)"
-- "AI-powered everything"
-- "Can we pivot to Web3?"
-- "Make it like TikTok"
-- "Add a chatbot"
-- "One more stakeholder review"
+### Witty Feedback
+Shown as a brief toast/label after each acronym attempt:
 
-Good (green tickets -- Prioritize mechanic):
-- "Fix critical bug"
-- "User research"
-- "Accessibility audit"
-- "Performance optimization"
+**Correct pool:**
+- "Stakeholders are nodding!"
+- "Engineering actually understood you!"
+- "That's going in the release notes."
+- "The board is impressed."
+- "Ship it!"
 
-### Visual Style
-- Minimalist vector matching Sprint Runner
-- Feature requests: small rounded-rect "tickets" with truncated text labels
-- North Star player: a simple star SVG with a subtle glow, grows visually with bloat
-- "Saying NO" power-up: red circle with bold "NO" text
-- Green requests: green-bordered tickets with a subtle pulse
+**Incorrect pool:**
+- "Let's take this offline."
+- "Let's circle back in the next sprint."
+- "We'll add it to the backlog."
+- "Maybe we need a workshop for that."
+- "Parking lot item."
+
+### Win State and Promotion Titles
+Completing all 4 levels triggers confetti and awards a title based on performance:
+
+| Misses | Title |
+|---|---|
+| 0 | "Chief Acronym Officer" |
+| 1-3 | "Senior Director of Alphabet Soup" |
+| 4-6 | "VP of Verbose Phrases" |
+| 7+ | "Junior Associate of Jargon" |
+
+High score (fewest misses) saved to localStorage under `decipherHighScore`.
+
+### Visual Design
+- Falling acronym: large bold text descending smoothly from top to bottom
+- Definition hint: word slots displayed below the game area, revealed as typed
+- Level banner: shown at the start of each level with the level title (e.g., "Level 2: The Metrics")
+- Progress indicator: shows "Acronym 3/6" within the current level
+- Clean minimalist style matching Sprint Runner -- no canvas, uses DOM elements with framer-motion for the falling animation
 
 ### Audio
-- Reuses existing `AudioContext` system and `createBeep` helper from Sprint Runner (will be extracted to a shared utility or duplicated in the component)
-- Hit: low descending tone
-- "NO" collect: ascending chord
-- Green request collect: bright rising arpeggio
-- Win: reuse victory fanfare
-- Game over: reuse descending tones
+- Correct word: bright ascending beep (reuses AudioContext pattern)
+- Full acronym correct: chord flourish
+- Wrong word: low buzz
+- Level complete: rising arpeggio
+- Game over: descending tones
+- Final win: victory fanfare with confetti
 
 ### Input
-- **Desktop**: Arrow keys / WASD for 8-directional movement. Mouse movement also supported
-- **Mobile**: Touch-drag to move the star. Touch position relative to game area mapped to player position
-- Movement clamped to game boundaries
+- **Desktop**: Auto-focused text input. Type and press Space/Enter to submit each word
+- **Mobile**: Same text input with on-screen keyboard. The game area is compact enough to remain visible above the keyboard
 
----
+## Game Selector Hub Update (Play.tsx)
 
-## Header Tooltip Update
+Update the second card:
+- **Title**: "The Decipher"
+- **Description**: "PMs love acronyms. Type the full definition before time runs out. Can you earn a promotion?"
+- **Icon**: A keyboard/text icon (e.g., Lucide `Keyboard` icon) instead of the star
 
-In `src/components/Header.tsx`, change the tooltip content from:
-
-```
-<p>Sprint Runner</p>
-```
-
-to:
-
-```
-<p>Play</p>
-```
-
----
+The view type `"scope"` can be renamed to `"decipher"` for clarity, and the import updated from `ScopeCreepSurvivor` to `TheDecipher`.
 
 ## Technical Details
 
-### Sprint Runner Extraction
-- All code from the current `Play.tsx` (constants, types, audio helpers, component logic, JSX) moves into `SprintRunner.tsx`
-- The component wraps itself in a simple `div` (no Layout/SEO -- those stay in Play.tsx)
-- Accepts an `onBack` callback prop to return to the game selector
+### Component Structure
+- `TheDecipher` component (~350-400 lines), accepting `onBack: () => void` prop
+- Game state machine: `start` | `playing` | `levelIntro` | `win` | `gameover`
+- Falling animation driven by `requestAnimationFrame` with delta-time (same pattern as Sprint Runner) updating a Y position from 0 to GAME_HEIGHT
+- Fall speed: starts at ~0.8px/frame, increases ~25% per level
+- Each acronym gets a time window based on fall distance / speed
+- No complex collision detection needed -- purely time-based (acronym reaches bottom = miss)
 
-### Scope Creep Survivor Structure
-- Uses `requestAnimationFrame` with delta-time game loop (same pattern as Sprint Runner)
-- All positions in 640x300 game-space, rendered with `scaleFactor`
-- AABB collision detection with padding
-- Wave pattern system driven by a `getWavePhase()` function based on MVP progress percentage
-- Spawn functions vary by phase: `spawnRandom()`, `spawnStream()`, `spawnSpiral()`, `spawnWall()`
+### Data Structure
+```
+interface AcronymEntry {
+  acronym: string;        // e.g., "MVP"
+  definition: string[];   // e.g., ["Minimum", "Viable", "Product"]
+}
 
-### Game Selector Hub
-- Clean card-based UI with game title, one-line description, and Play button per game
-- Animated entrance with framer-motion
-- Remembers nothing between selections (each game resets on mount)
+interface Level {
+  name: string;           // e.g., "The Basics"
+  title: string;          // e.g., "Junior PM"
+  entries: AcronymEntry[];
+  requiredCorrect: number;
+}
+```
 
+### localStorage
+- Key: `decipherHighScore`
+- Value: fewest total misses across all levels (lower is better)
