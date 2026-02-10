@@ -41,6 +41,13 @@ const testimonials: Testimonial[] = [
     quote: "Having worked with Dale Jacobs at EVRYTHNG and Digimarc, I can say without hesitation he is the strongest cross-disciplinary product leader I've had the pleasure to partner with. What truly sets Dale apart is not just his rare blend of technical fluency and commercial acumen, but his relentless focus on clarity in execution, whether that's distilling a complex technical architecture into an elegant strategic narrative or shaping an ambiguous market opportunity into a compelling, customer-centric roadmap. Dale has an incredible ability to bridge gaps between engineering, go-to-market and business strategy. He doesn't just define vision, he operationalises it. I've watched him lead teams through ambiguity, coaxing out simplicity without losing nuance, and always ensuring that every stakeholder, from engineers to commercial partners feels informed, aligned, and empowered. What I admire most is his precision in the details that matter: sculpting pricing frameworks that reflect real value, crafting external materials that resonate with customers, and developing adoption strategies that truly drive engagement. Dale's work doesn't just ship, it lands, it sells, and it scales. Simply put: he elevates every team and product he touches."
   },
   {
+    name: "Charles Adeeko",
+    title: "Director, Quality Engineering",
+    company: "EVRYTHNG",
+    photo: charlesPhoto,
+    quote: "Dale is the kind of product leader that executive teams depend on, and for good reason. Having worked with him over several years, I've seen him take complete ownership of every project, delivering exceptional work that consistently exceeds expectations. His attention to detail is evident in everything he does, from the strategic roadmaps he designs to his clear, proactive communication with stakeholders. What truly sets Dale apart is his reliability. When he commits to something, it gets done to the highest standard. Executive teams trust him because he's earned it through consistent, quality execution. Simply put, if I were building a team to deliver a product, Dale would be on it every time. He's trustworthy, hardworking, and here's what makes him truly exceptional: he gives 110% every single day. Whether it's a major product launch or daily execution, he brings the same level of commitment year after year. That sustained drive to deliver excellence is incredibly rare."
+  },
+  {
     name: "Brianna Feeney",
     title: "VP of Product Management & Marketing",
     company: "Digimarc",
@@ -53,13 +60,6 @@ const testimonials: Testimonial[] = [
     company: "Digimarc",
     photo: megPhoto,
     quote: "Dale is an exceptional product leader: strategic, technically sophisticated, and able to see the full picture while bringing clarity to complexity. He has a rare ability to understand diverse perspectives and guide teams toward alignment with consistent calm, insight, and empathy. Dale transformed how our company captured and prioritized requests, leveraging simple tools like Jira Product Discovery to streamline processes and create greater transparency. He excels at leading and inspiring globally distributed teams and navigating across cultures to help individuals reach their full potential. Beyond his product leadership, Dale is simply an excellent human: thoughtful, steady, and a true partner."
-  },
-  {
-    name: "Charles Adeeko",
-    title: "Director, Quality Engineering",
-    company: "EVRYTHNG",
-    photo: charlesPhoto,
-    quote: "Dale is the kind of product leader that executive teams depend on, and for good reason. Having worked with him over several years, I've seen him take complete ownership of every project, delivering exceptional work that consistently exceeds expectations. His attention to detail is evident in everything he does, from the strategic roadmaps he designs to his clear, proactive communication with stakeholders. What truly sets Dale apart is his reliability. When he commits to something, it gets done to the highest standard. Executive teams trust him because he's earned it through consistent, quality execution. Simply put, if I were building a team to deliver a product, Dale would be on it every time. He's trustworthy, hardworking, and here's what makes him truly exceptional: he gives 110% every single day. Whether it's a major product launch or daily execution, he brings the same level of commitment year after year. That sustained drive to deliver excellence is incredibly rare."
   },
   {
     name: "Beth Gantz",
