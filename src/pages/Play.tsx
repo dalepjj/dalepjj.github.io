@@ -69,7 +69,7 @@ const Play = () => {
                   </div>
                   <h2 className="font-serif text-xl mb-2">The Decipher</h2>
                   <p className="text-sm text-muted-foreground">
-                    PMs love acronyms. Type the full definition before time runs out.
+                    Master the acronyms and secure your promotion.
                   </p>
                 </Link>
               </motion.div>
