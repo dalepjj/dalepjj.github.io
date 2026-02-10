@@ -641,10 +641,15 @@ const SprintRunner = ({ onBack }: SprintRunnerProps) => {
   return (
     <div>
       <style>{gameStyles}</style>
-      <div className="mb-8">
-        <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Games
-        </button>
+      <div className="flex justify-center">
+        <div className="w-full" style={{ maxWidth: GAME_WIDTH }}>
+          <button onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Games
+          </button>
+        </div>
+      </div>
+
+      <div className="text-center mb-8">
         <h1 className="section-title mb-4 text-center">Sprint Runner</h1>
         <p className="body-text max-w-xl mx-auto text-center">
           Navigate the chaos of product development and acquire 1,000 users to achieve product-market fit.
