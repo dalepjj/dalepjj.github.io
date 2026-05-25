@@ -28,10 +28,16 @@ const ExperienceItem = ({ period, title, company, description, delay = 0 }: Expe
 const Resume = () => {
   const experiences = [
     {
-      period: "September 2025 – Present",
+      period: "May 2026 – Present",
+      title: "Manager, Product Management (AI & UX)",
+      company: "Loftware",
+      description: "Expanded leadership: Promoted to manage the UX department while continuing to lead the global product management strategy for AI and Data initiatives. Team management: Directing a multi-disciplinary team of UX designers and researchers; unifying product discovery and design standards to accelerate the delivery of intelligent, user-centric enterprise features.",
+    },
+    {
+      period: "September 2025 – May 2026",
       title: "Senior Product Manager - AI and Data",
       company: "Loftware",
-      description: "I'm currently architecting the AI and Data product strategy, establishing a unified data platform to power intelligence across our core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
+      description: "Architected the global AI and Data product strategy, establishing a unified data platform to power intelligence across core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
     },
     {
       period: "March 2022 – August 2025",
