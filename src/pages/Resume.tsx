@@ -132,11 +132,34 @@ const Resume = () => {
             Experience
           </motion.h2>
           <div className="space-y-14">
+            {/* Loftware - grouped under single coral border */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="border-l-2 border-coral pl-6 -ml-px rounded-r-lg"
+            >
+              <div className="py-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
+                <p className="text-sm text-muted-foreground mb-2">May 2026 – Present</p>
+                <h3 className="font-serif text-xl font-medium leading-tight">
+                  Manager, Product Management (AI & UX), <span className="text-coral">Loftware</span>
+                </h3>
+                <p className="body-text mt-3">Promoted to manage the UX department while continuing to lead the global product management strategy for AI and Data initiatives, currently directing a multi-disciplinary team of UX designers and researchers while unifying product discovery and design standards to accelerate the delivery of intelligent, user-centric enterprise features.</p>
+              </div>
+              <div className="py-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
+                <p className="text-sm text-muted-foreground mb-2">September 2025 – May 2026</p>
+                <h3 className="font-serif text-xl font-medium leading-tight">
+                  Senior Product Manager - AI and Data, <span className="text-coral">Loftware</span>
+                </h3>
+                <p className="body-text mt-3">Architected the global AI and Data product strategy, establishing a unified data platform to power intelligence across core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.</p>
+              </div>
+            </motion.div>
+
             {experiences.map((exp, index) => (
               <ExperienceItem
                 key={index}
                 {...exp}
-                delay={0.3 + index * 0.1}
+                delay={0.3 + (index + 1) * 0.1}
               />
             ))}
           </div>
