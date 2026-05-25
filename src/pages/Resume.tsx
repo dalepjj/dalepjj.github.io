@@ -25,7 +25,7 @@ const Resume = () => {
     [
       {
         period: "May 2026 – Present",
-        title: "Manager, Product Management (AI & UX)",
+        title: "Manager, Product Management - AI & UX, Loftware",
         company: "Loftware",
         description: "Promoted to manage the UX department while continuing to lead the global product management strategy for AI and Data initiatives, currently directing a multi-disciplinary team of UX designers and researchers while unifying product discovery and design standards to accelerate the delivery of intelligent, user-centric enterprise features.",
       },
@@ -103,10 +103,10 @@ const Resume = () => {
     "AI & Data Strategy",
     "Multi-product Platform Strategy",
     "Agile Delivery",
-    "Team Leadership & Mentoring",
+    "People Management & Org Leadership",
     "Go-to-market Execution",
     "User Research",
-    "Design Thinking",
+    "UX Strategy & Design Leadership",
     "Rapid Prototyping",
     "Pricing & Packaging",
     "Cross-functional Collaboration",
@@ -137,8 +137,7 @@ const Resume = () => {
         >
           <h1 className="section-title mb-4">Resume</h1>
           <p className="body-text max-w-2xl">
-            SaaS Product Leader with 18+ years of experience building and scaling B2B platforms. 
-            Skilled in driving growth, defining product strategy, and leading high-performing teams.
+            SaaS Product Leader with 18+ years of experience building B2B platforms and leading high-performing teams. Skilled in driving growth, aligning cross-functional product and UX organizations, and executing complex AI and data strategies.
           </p>
         </motion.div>
 
