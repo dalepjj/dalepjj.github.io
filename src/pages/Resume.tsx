@@ -2,79 +2,100 @@ import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 
-interface ExperienceItemProps {
+
+interface Role {
   period: string;
   title: string;
   company: string;
   description: string;
-  delay?: number;
 }
 
-const ExperienceItem = ({ period, title, company, description, delay = 0 }: ExperienceItemProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
-    className="border-l-2 border-coral pl-6 py-4 -ml-px rounded-r-lg transition-all duration-200 hover:bg-coral-light/30 hover:border-coral-hover cursor-default"
-  >
-    <p className="text-sm text-muted-foreground mb-2">{period}</p>
+const RoleBlock = ({ role }: { role: Role }) => (
+  <div className="py-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
+    <p className="text-sm text-muted-foreground mb-2">{role.period}</p>
     <h3 className="font-serif text-xl font-medium leading-tight">
-      {title}, <span className="text-coral">{company}</span>
+      {role.title}, <span className="text-coral">{role.company}</span>
     </h3>
-    <p className="body-text mt-3">{description}</p>
-  </motion.div>
+    <p className="body-text mt-3">{role.description}</p>
+  </div>
 );
 
 const Resume = () => {
-  const experiences = [
-    {
-      period: "March 2022 – August 2025",
-      title: "Director of Product Management",
-      company: "Digimarc",
-      description: "Following the acquisition of EVRYTHNG, I stepped up to lead the global product team and oversee our new unified platform. It was a massive integration effort - I'm especially proud that we launched our first combined product in just eight months and secured a landmark deal with Unilever for the world's largest deployment of GS1 Digital Link QR codes. Contributed to 18% ARR growth by leading strategic product initiatives, including the simplification of SaaS pricing to shorten deal cycles. Additionally, introduced self-service strategies that reduced onboarding time by 67%.",
-    },
-    {
-      period: "January 2019 – March 2022",
-      title: "Senior Product Manager",
-      company: "EVRYTHNG (Acquired by Digimarc)",
-      description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our data intelligence with marking tech was a key factor in Digimarc's decision to acquire the company.",
-    },
-    {
-      period: "January 2017 – December 2018",
-      title: "Senior Product Manager",
-      company: "Sensormatic",
-      description: "I led the critical transition of our RFID mobile and web solutions from on-premise to SaaS, a move that drastically accelerated time-to-value for our customers. I was also a vocal advocate for UX investment - securing dedicated design resources to drive usability improvements. Day-to-day, I served as Product Owner for two distributed scrum teams, ensuring engineering output stayed strictly aligned with business priorities.",
-    },
-    {
-      period: "December 2014 – January 2017",
-      title: "Business Solutions Manager",
-      company: "Sensormatic",
-      description: "I built and led the professional services business analysis team for Europe. I kept my hand in the details too - acting as lead analyst on global RFID implementations and crafting solution designs during the pre-sales process.",
-    },
-    {
-      period: "May 2014 – December 2014",
-      title: "Operational Transformation Consultant",
-      company: "KPMG",
-      description: "In this consulting role, I jumped into two major transformations. I project managed cross-functional teams for the relaunch of the Egg financial services brand, and served as Lead Consultant to deliver a new target operating model for Shawbrook Bank - streamlining their operations and defining their future structure.",
-    },
-    {
-      period: "February 2012 – May 2014",
-      title: "Business Analysis Manager",
-      company: "Asda",
-      description: "I focused heavily on strategy in this role, defining and launching the roadmap for Asda's RFID inventory management. Beyond the technology, I dedicated significant time to capability building - coaching and mentoring 40 Business Analysts on everything from business case development to benefits management.",
-    },
-    {
-      period: "April 2011 – February 2012",
-      title: "Business Analyst",
-      company: "Republic Retail",
-      description: "I drove the delivery of high-profile omnichannel initiatives, including the Click & Collect and In-Store Ordering programmes. To ensure we stayed user-centric, I established continuous product discovery channels - running frontline roundtables to verify that user feedback actually drove improvements for the Click & Collect service.",
-    },
-    {
-      period: "September 2007 – April 2011",
-      title: "Business Analyst (Graduate Programme)",
-      company: "Asda",
-      description: "I started my career on the Graduate Programme, conducting the deep-dive analysis needed for a major SAP payment systems cutover to mitigate transitional risk. I also cut my teeth on M&A integration, leading a critical HR system workstream that consolidated back-office support teams.",
-    },
+  const experienceGroups: Role[][] = [
+    [
+      {
+        period: "May 2026 – Present",
+        title: "Manager, Product Management (AI & UX)",
+        company: "Loftware",
+        description: "Promoted to manage the UX department while continuing to lead the global product management strategy for AI and Data initiatives, currently directing a multi-disciplinary team of UX designers and researchers while unifying product discovery and design standards to accelerate the delivery of intelligent, user-centric enterprise features.",
+      },
+      {
+        period: "September 2025 – May 2026",
+        title: "Senior Product Manager - AI and Data",
+        company: "Loftware",
+        description: "Architected the global AI and Data product strategy, establishing a unified data platform to power intelligence across core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.",
+      },
+    ],
+    [
+      {
+        period: "March 2022 – August 2025",
+        title: "Director of Product Management",
+        company: "Digimarc",
+        description: "Following the acquisition of EVRYTHNG, I stepped up to lead the global product team and oversee our new unified platform. It was a massive integration effort - I'm especially proud that we launched our first combined product in just eight months and secured a landmark deal with Unilever for the world's largest deployment of GS1 Digital Link QR codes. Contributed to 18% ARR growth by leading strategic product initiatives, including the simplification of SaaS pricing to shorten deal cycles. Additionally, introduced self-service strategies that reduced onboarding time by 67%.",
+      },
+      {
+        period: "January 2019 – March 2022",
+        title: "Senior Product Manager",
+        company: "EVRYTHNG (Acquired by Digimarc)",
+        description: "Before the acquisition, I led the strategy for our anti-counterfeiting product, scaling it to 3 million authentication events. I also led a proof-of-concept project with the World Economic Forum to authenticate apparel in the secondary market, which was a great opportunity to promote circularity. My work building partnerships to integrate our data intelligence with marking tech was a key factor in Digimarc's decision to acquire the company.",
+      },
+    ],
+    [
+      {
+        period: "January 2017 – December 2018",
+        title: "Senior Product Manager",
+        company: "Sensormatic",
+        description: "I led the critical transition of our RFID mobile and web solutions from on-premise to SaaS, a move that drastically accelerated time-to-value for our customers. I was also a vocal advocate for UX investment - securing dedicated design resources to drive usability improvements. Day-to-day, I served as Product Owner for two distributed scrum teams, ensuring engineering output stayed strictly aligned with business priorities.",
+      },
+      {
+        period: "December 2014 – January 2017",
+        title: "Business Solutions Manager",
+        company: "Sensormatic",
+        description: "I built and led the professional services business analysis team for Europe. I kept my hand in the details too - acting as lead analyst on global RFID implementations and crafting solution designs during the pre-sales process.",
+      },
+    ],
+    [
+      {
+        period: "May 2014 – December 2014",
+        title: "Operational Transformation Consultant",
+        company: "KPMG",
+        description: "In this consulting role, I jumped into two major transformations. I project managed cross-functional teams for the relaunch of the Egg financial services brand, and served as Lead Consultant to deliver a new target operating model for Shawbrook Bank - streamlining their operations and defining their future structure.",
+      },
+    ],
+    [
+      {
+        period: "February 2012 – May 2014",
+        title: "Business Analysis Manager",
+        company: "Asda",
+        description: "I focused heavily on strategy in this role, defining and launching the roadmap for Asda's RFID inventory management. Beyond the technology, I dedicated significant time to capability building - coaching and mentoring 40 Business Analysts on everything from business case development to benefits management.",
+      },
+    ],
+    [
+      {
+        period: "April 2011 – February 2012",
+        title: "Business Analyst",
+        company: "Republic Retail",
+        description: "I drove the delivery of high-profile omnichannel initiatives, including the Click & Collect and In-Store Ordering programmes. To ensure we stayed user-centric, I established continuous product discovery channels - running frontline roundtables to verify that user feedback actually drove improvements for the Click & Collect service.",
+      },
+    ],
+    [
+      {
+        period: "September 2007 – April 2011",
+        title: "Business Analyst (Graduate Programme)",
+        company: "Asda",
+        description: "I started my career on the Graduate Programme, conducting the deep-dive analysis needed for a major SAP payment systems cutover to mitigate transitional risk. I also cut my teeth on M&A integration, leading a critical HR system workstream that consolidated back-office support teams.",
+      },
+    ],
   ];
 
   const skills = [
@@ -132,35 +153,18 @@ const Resume = () => {
             Experience
           </motion.h2>
           <div className="space-y-14">
-            {/* Loftware - grouped under single coral border */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="border-l-2 border-coral pl-6 -ml-px rounded-r-lg"
-            >
-              <div className="py-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
-                <p className="text-sm text-muted-foreground mb-2">May 2026 – Present</p>
-                <h3 className="font-serif text-xl font-medium leading-tight">
-                  Manager, Product Management (AI & UX), <span className="text-coral">Loftware</span>
-                </h3>
-                <p className="body-text mt-3">Promoted to manage the UX department while continuing to lead the global product management strategy for AI and Data initiatives, currently directing a multi-disciplinary team of UX designers and researchers while unifying product discovery and design standards to accelerate the delivery of intelligent, user-centric enterprise features.</p>
-              </div>
-              <div className="py-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
-                <p className="text-sm text-muted-foreground mb-2">September 2025 – May 2026</p>
-                <h3 className="font-serif text-xl font-medium leading-tight">
-                  Senior Product Manager - AI and Data, <span className="text-coral">Loftware</span>
-                </h3>
-                <p className="body-text mt-3">Architected the global AI and Data product strategy, establishing a unified data platform to power intelligence across core product workflows. I also led the implementation of Pendo to create a continuous user feedback loop - using behavioural analytics to inform design improvements and help prioritise features on the roadmap.</p>
-              </div>
-            </motion.div>
-
-            {experiences.map((exp, index) => (
-              <ExperienceItem
-                key={index}
-                {...exp}
-                delay={0.3 + (index + 1) * 0.1}
-              />
+            {experienceGroups.map((group, groupIndex) => (
+              <motion.div
+                key={groupIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 + groupIndex * 0.1 }}
+                className="border-l-2 border-coral pl-6 -ml-px rounded-r-lg"
+              >
+                {group.map((role, roleIndex) => (
+                  <RoleBlock key={roleIndex} role={role} />
+                ))}
+              </motion.div>
             ))}
           </div>
         </section>
