@@ -2,28 +2,6 @@ import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 
-interface ExperienceItemProps {
-  period: string;
-  title: string;
-  company: string;
-  description: string;
-  delay?: number;
-}
-
-const ExperienceItem = ({ period, title, company, description, delay = 0 }: ExperienceItemProps) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
-    className="border-l-2 border-coral pl-6 py-4 -ml-px rounded-r-lg transition-all duration-200 hover:bg-coral-light/30 hover:border-coral-hover cursor-default"
-  >
-    <p className="text-sm text-muted-foreground mb-2">{period}</p>
-    <h3 className="font-serif text-xl font-medium leading-tight">
-      {title}, <span className="text-coral">{company}</span>
-    </h3>
-    <p className="body-text mt-3">{description}</p>
-  </motion.div>
-);
 
 interface Role {
   period: string;
