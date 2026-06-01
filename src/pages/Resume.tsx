@@ -11,7 +11,7 @@ interface Role {
 }
 
 const RoleBlock = ({ role }: { role: Role }) => (
-  <div className="py-4 pl-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
+  <div className="py-4 px-4 transition-all duration-200 hover:bg-coral-light/30 cursor-default rounded-r-lg">
     <p className="text-sm text-muted-foreground mb-2">{role.period}</p>
     <h3 className="font-serif text-xl font-medium leading-tight">
       {role.title}, <span className="text-coral">{role.company}</span>
