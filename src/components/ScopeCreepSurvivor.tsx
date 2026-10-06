@@ -98,6 +98,11 @@ function getPromotionTitle(misses: number) {
   return "Junior Associate of Jargon";
 }
 
+// Words revealed automatically (hyphens, and the "a" already shown in SaaS)
+function isAutoWord(word: string) {
+  return word === "-" || word === "a";
+}
+
 function makeHint(word: string): string {
   if (word.length <= 1) return word;
   return word[0] + "·".repeat(word.length - 1);
@@ -232,7 +237,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
       const nextEntry = lvl.entries[nextIdx];
       const initialRevealed = new Array(nextEntry.definition.length).fill(false);
       let idx = 0;
-      while (idx < nextEntry.definition.length && nextEntry.definition[idx] === "-") {
+      while (idx < nextEntry.definition.length && nextEntry.isAutoWord(nextEntry.definition[idx])) {
         initialRevealed[idx] = true;
         idx++;
       }
@@ -263,7 +268,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     const initialRevealed = new Array(e.definition.length).fill(false);
     // Skip leading hyphens
     let idx = 0;
-    while (idx < e.definition.length && e.definition[idx] === "-") {
+    while (idx < e.definition.length && e.isAutoWord(nextEntry.definition[idx])) {
       initialRevealed[idx] = true;
       idx++;
     }
@@ -293,7 +298,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
   const skipHyphens = useCallback((currentWordIdx: number, currentRevealed: boolean[], def: string[]) => {
     let idx = currentWordIdx;
     const revealed = [...currentRevealed];
-    while (idx < def.length && def[idx] === "-") {
+    while (idx < def.length && isAutoWord(def[idx])) {
       revealed[idx] = true;
       idx++;
     }
@@ -454,8 +459,8 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
 
             <div className="flex flex-wrap gap-1 justify-center mb-6 min-h-[2rem] items-center">
               {entry.definition.map((word, i) => (
-                word === "-" ? (
-                  <span key={i} className="text-muted-foreground font-mono text-sm">-</span>
+                isAutoWord(word) ? (
+                  <span key={i} className="text-muted-foreground font-mono text-sm">{word}</span>
                 ) : (
                   <span
                     key={i}
