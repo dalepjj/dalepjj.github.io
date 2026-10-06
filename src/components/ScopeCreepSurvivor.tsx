@@ -328,6 +328,12 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     let idx = wordIndex;
     let isCorrect = tokens.length > 0;
     for (const tok of tokens) {
+      // Allow typing an auto-filled word (e.g. the "a" in SaaS) without penalty
+      if (idx < entry.definition.length && isAutoWord(entry.definition[idx]) && matches(entry.definition[idx], tok)) {
+        newRevealed[idx] = true;
+        idx++;
+        continue;
+      }
       ({ newWordIndex: idx, newRevealed } = skipHyphens(idx, newRevealed, entry.definition));
       if (idx >= entry.definition.length || !matches(entry.definition[idx], tok)) {
         isCorrect = false;
