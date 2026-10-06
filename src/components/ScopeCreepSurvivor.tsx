@@ -237,7 +237,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
       const nextEntry = lvl.entries[nextIdx];
       const initialRevealed = new Array(nextEntry.definition.length).fill(false);
       let idx = 0;
-      while (idx < nextEntry.definition.length && nextEntry.isAutoWord(nextEntry.definition[idx])) {
+      while (idx < nextEntry.definition.length && isAutoWord(nextEntry.definition[idx])) {
         initialRevealed[idx] = true;
         idx++;
       }
@@ -268,7 +268,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     const initialRevealed = new Array(e.definition.length).fill(false);
     // Skip leading hyphens
     let idx = 0;
-    while (idx < e.definition.length && e.isAutoWord(nextEntry.definition[idx])) {
+    while (idx < e.definition.length && isAutoWord(e.definition[idx])) {
       initialRevealed[idx] = true;
       idx++;
     }
