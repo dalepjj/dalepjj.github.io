@@ -749,30 +749,30 @@ const SprintRunner = ({ onBack }: SprintRunnerProps) => {
           )}
 
           {gameState === "gameover" && (
-            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-              <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2 text-primary">Sprint Failed!</h2>
-              <p className="text-muted-foreground text-sm mb-1">You acquired <span className="font-bold text-foreground">{Math.floor(score)}</span> users</p>
+            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10 px-3">
+              <h2 className="font-serif text-lg sm:text-2xl md:text-3xl font-medium mb-1 sm:mb-2 text-primary text-center leading-tight">Sprint Failed!</h2>
+              <p className="text-muted-foreground text-xs sm:text-sm mb-0.5 sm:mb-1">You acquired <span className="font-bold text-foreground">{Math.floor(score)}</span> users</p>
               {isNewHighScore && (
-                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-sm mb-2">🎉 New Best!</motion.p>
+                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-xs sm:text-sm mb-1 sm:mb-2">🎉 New Best!</motion.p>
               )}
-              <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">Product Management is hard. Hiring Dale makes it easier.</p>
-              <div className="flex gap-3">
-                <Button onClick={startGame} variant="outline" aria-label="Try the game again">Try Again</Button>
-                <Button asChild className="bg-primary hover:bg-primary/90"><Link to="/contact" aria-label="Contact Dale about product management">Contact Dale</Link></Button>
+              <p className="text-muted-foreground text-xs sm:text-sm mb-2 sm:mb-6 max-w-xs text-center">Product Management is hard. Hiring Dale makes it easier.</p>
+              <div className="flex gap-2 sm:gap-3">
+                <Button onClick={startGame} variant="outline" className="h-8 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm" aria-label="Try the game again">Try Again</Button>
+                <Button asChild className="bg-primary hover:bg-primary/90 h-8 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"><Link to="/contact" aria-label="Contact Dale about product management">Contact Dale</Link></Button>
               </div>
             </div>
           )}
 
           {gameState === "win" && (
-            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10">
-              <h2 className="font-serif text-2xl md:text-3xl font-medium mb-2">🚀 Product-Market Fit Achieved!</h2>
+            <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center z-10 px-3">
+              <h2 className="font-serif text-lg sm:text-2xl md:text-3xl font-medium mb-1 sm:mb-2 text-center leading-tight">🚀 Product-Market Fit Achieved!</h2>
               {isNewHighScore && (
-                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-sm mb-2">🎉 New Best!</motion.p>
+                <motion.p initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-coral font-bold text-xs sm:text-sm mb-1 sm:mb-2">🎉 New Best!</motion.p>
               )}
-              <p className="text-muted-foreground text-sm mb-6 max-w-xs text-center">You clearly know how to navigate a product launch. So do I.</p>
-              <div className="flex gap-3">
-                <Button onClick={startGame} variant="outline" aria-label="Play another game">Play Another Sprint</Button>
-                <Button asChild className="bg-primary hover:bg-primary/90"><Link to="/contact" aria-label="Let's collaborate on building something together">Let's Build Something Real</Link></Button>
+              <p className="text-muted-foreground text-xs sm:text-sm mb-2 sm:mb-6 max-w-xs text-center">You clearly know how to navigate a product launch. So do I.</p>
+              <div className="flex gap-2 sm:gap-3">
+                <Button onClick={startGame} variant="outline" className="h-8 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm" aria-label="Play another game">Play Another Sprint</Button>
+                <Button asChild className="bg-primary hover:bg-primary/90 h-8 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"><Link to="/contact" aria-label="Let's collaborate on building something together">Let's Build Something Real</Link></Button>
               </div>
             </div>
           )}
