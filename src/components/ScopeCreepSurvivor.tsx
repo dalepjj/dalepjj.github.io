@@ -315,11 +315,18 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
       amortization: ["amortisation"],
       "won't": ["wont"],
     };
+    // Reduce a word to a rough singular form so plural answers are accepted
+    const singularize = (s: string) => {
+      if (s.endsWith("ies")) return s.slice(0, -3) + "y";
+      if (s.endsWith("es") && !s.endsWith("ses") && !s.endsWith("sse")) return s.slice(0, -2);
+      if (s.endsWith("s") && !s.endsWith("ss")) return s.slice(0, -1);
+      return s;
+    };
     const matches = (expected: string, t: string) => {
       const ne = normalize(expected);
       const nt = normalize(t);
       const variants = SPELLING_VARIANTS[expected.toLowerCase()] || SPELLING_VARIANTS[ne] || [];
-      return nt === ne || variants.includes(nt);
+      return nt === ne || variants.includes(nt) || singularize(nt) === singularize(ne);
     };
 
     // Split typed input into words (spaces or hyphens), ignoring blanks
