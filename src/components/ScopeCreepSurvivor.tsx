@@ -98,6 +98,11 @@ function getPromotionTitle(misses: number) {
   return "Junior Associate of Jargon";
 }
 
+// Words revealed automatically (hyphens, and the "a" already shown in SaaS)
+function isAutoWord(word: string) {
+  return word === "-" || word === "a";
+}
+
 function makeHint(word: string): string {
   if (word.length <= 1) return word;
   return word[0] + "·".repeat(word.length - 1);
@@ -232,7 +237,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
       const nextEntry = lvl.entries[nextIdx];
       const initialRevealed = new Array(nextEntry.definition.length).fill(false);
       let idx = 0;
-      while (idx < nextEntry.definition.length && nextEntry.definition[idx] === "-") {
+      while (idx < nextEntry.definition.length && isAutoWord(nextEntry.definition[idx])) {
         initialRevealed[idx] = true;
         idx++;
       }
@@ -263,7 +268,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     const initialRevealed = new Array(e.definition.length).fill(false);
     // Skip leading hyphens
     let idx = 0;
-    while (idx < e.definition.length && e.definition[idx] === "-") {
+    while (idx < e.definition.length && isAutoWord(e.definition[idx])) {
       initialRevealed[idx] = true;
       idx++;
     }
@@ -293,7 +298,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
   const skipHyphens = useCallback((currentWordIdx: number, currentRevealed: boolean[], def: string[]) => {
     let idx = currentWordIdx;
     const revealed = [...currentRevealed];
-    while (idx < def.length && def[idx] === "-") {
+    while (idx < def.length && isAutoWord(def[idx])) {
       revealed[idx] = true;
       idx++;
     }
@@ -305,27 +310,39 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     const typed = inputValue.trim();
     if (!typed) return;
 
-    const expected = entry.definition[wordIndex];
-    const normalize = (s: string) => s.replace(/[,.:;!?']/g, "").toLowerCase();
+    const normalize = (s: string) => s.replace(/[,.:;!?']/g, "").trim().toLowerCase();
     const SPELLING_VARIANTS: Record<string, string[]> = {
       amortization: ["amortisation"],
       "won't": ["wont"],
     };
+    const matches = (expected: string, t: string) => {
+      const ne = normalize(expected);
+      const nt = normalize(t);
+      const variants = SPELLING_VARIANTS[expected.toLowerCase()] || SPELLING_VARIANTS[ne] || [];
+      return nt === ne || variants.includes(nt);
+    };
 
-    const normalizedExpected = normalize(expected);
-    const normalizedTyped = normalize(typed);
-    const variants = SPELLING_VARIANTS[normalizedExpected] || [];
-    const isCorrect = normalizedTyped === normalizedExpected || variants.includes(normalizedTyped);
+    // Split typed input into words (spaces or hyphens), ignoring blanks
+    const tokens = typed.split(/[\s-]+/).filter(Boolean);
+    let newRevealed = [...revealedWords];
+    let idx = wordIndex;
+    let isCorrect = tokens.length > 0;
+    for (const tok of tokens) {
+      ({ newWordIndex: idx, newRevealed } = skipHyphens(idx, newRevealed, entry.definition));
+      if (idx >= entry.definition.length || !matches(entry.definition[idx], tok)) {
+        isCorrect = false;
+        break;
+      }
+      newRevealed[idx] = true;
+      idx++;
+    }
 
     if (isCorrect) {
-      const newRevealed = [...revealedWords];
-      newRevealed[wordIndex] = true;
       setInputValue("");
       setInputFlash("correct");
       setTimeout(() => setInputFlash("none"), 300);
 
-      const nextRaw = wordIndex + 1;
-      const { newWordIndex, newRevealed: skippedRevealed } = skipHyphens(nextRaw, newRevealed, entry.definition);
+      const { newWordIndex, newRevealed: skippedRevealed } = skipHyphens(idx, newRevealed, entry.definition);
       setRevealedWords(skippedRevealed);
 
       if (newWordIndex >= entry.definition.length) {
@@ -357,7 +374,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSubmitWord();
     }
@@ -442,8 +459,8 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
 
             <div className="flex flex-wrap gap-1 justify-center mb-6 min-h-[2rem] items-center">
               {entry.definition.map((word, i) => (
-                word === "-" ? (
-                  <span key={i} className="text-muted-foreground font-mono text-sm">-</span>
+                isAutoWord(word) ? (
+                  <span key={i} className="text-muted-foreground font-mono text-sm">{word}</span>
                 ) : (
                   <span
                     key={i}
