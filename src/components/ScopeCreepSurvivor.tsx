@@ -318,7 +318,7 @@ const ScopeCreepSurvivor = ({ onBack }: Props) => {
     // Reduce a word to a rough singular form so plural answers are accepted
     const singularize = (s: string) => {
       if (s.endsWith("ies")) return s.slice(0, -3) + "y";
-      if (s.endsWith("es") && !s.endsWith("ses") && !s.endsWith("sse")) return s.slice(0, -2);
+      if (/(?:ses|zes|ches|shes|xes)$/.test(s)) return s.slice(0, -2);
       if (s.endsWith("s") && !s.endsWith("ss")) return s.slice(0, -1);
       return s;
     };
